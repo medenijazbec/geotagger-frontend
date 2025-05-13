@@ -1,0 +1,37 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .nav {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .link {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    color: #333;
+    transition: background-color 0.2s;
+  }
+  
+  .link:hover {
+    background: #e0e0e0;
+  }
+  
+  .active {
+    background: #272d2d;
+    color: #fff;
+  }
+  
+  .main {
+    flex: 1;
+    padding: 1rem;
+    overflow: auto;
+  }
+  

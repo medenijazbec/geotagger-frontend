@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Geotagger – Sign in</title>
+  <!-- Roboto -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="signin.module.css" />
+</head>
+<body class="signup">
+  <!-- LEFT PANEL: form -->
+  <div class="panel panel--left">
+    <header class="signup__header">
+      <!-- full gradient logo + styled text -->
+      <img
+        src="../images/logo_gradient.png"
+        alt="Geotagger logo"
+        class="logo__icon"
+      />
+      <span class="logo__text">
+        <span class="logo__text--primary">Geo</span>tagger
+      </span>
+    </header>
+
+    <form class="signup__form" action="/signin" method="POST">
+      <h1 class="signup__title">Sign in</h1>
+      <p class="signup__subtitle">
+        Welcome back to Geotagger. We are glad that you are back.
+      </p>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="example@geotagger.com"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-icon">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="•••••••••••••••"
+            required
+          />
+          <span class="icon icon--eye"></span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--full">
+        Sign in
+      </button>
+
+      <button type="button" class="btn btn--outline btn--full social social--google">
+        <img src="../images/google-icon.png" alt="" class="social__icon" />
+        Sign in with Google
+      </button>
+
+      <button type="button" class="btn btn--outline btn--full social social--facebook">
+        <img src="../images/facebook-icon.png" alt="" class="social__icon" />
+        Sign in with Facebook
+      </button>
+
+      <p class="signup__footer-text">
+        Do you want to create an account?
+        <a href="/signup" class="link--primary">Sign up</a>
+      </p>
+    </form>
+  </div>
+
+  <!-- RIGHT PANEL: tinted map + white logo -->
+  <div class="panel panel--right">
+    <img
+      src="../images/signinMap.png"
+      alt=""
+      aria-hidden="true"
+      class="map"
+    />
+    <div class="overlay"></div>
+    <div class="right-logo-wrapper">
+      <img
+        src="../images/logo_gradient_white.png"
+        alt="Geotagger"
+        class="right-logo"
+      />
+    </div>
+  </div>
+</body>
+</html>

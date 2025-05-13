@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Enforce responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+
+    <title>Auction Bay</title>
+
+    <!-- ───── Security Meta-Tags ────────────────────────────────────── -->
+
+    <!-- HSTS hint (the server header via UseHsts() is authoritative) -->
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains" />
+
+    <!-- Prevent MIME‐type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+    <!-- Prevent clickjacking -->
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+
+    <!-- Control Referer header -->
+    <meta name="referrer" content="no-referrer" />
+
+    <!-- Disable powerful browser features we don’t need -->
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+
+    <!-- Content Security Policy: adjust domains as needed -->
+<meta http-equiv="Content-Security-Policy"
+content="
+  default-src 'self';
+  script-src  'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src    'self' https://fonts.gstatic.com;
+  img-src     'self' data: blob:
+              http://192.168.1.13:8080
+              https://192.168.1.13:8080
+              http://localhost:7056
+              https://localhost:7056
+              http://localhost:5173
+              http://192.168.1.4:5173
+              https://auctionbay.medenijazbec.pro;
+  connect-src 'self'
+              http://192.168.1.13:8080
+              https://192.168.1.13:8080
+              http://localhost:7056
+              https://localhost:7056
+              http://localhost:5173
+              http://192.168.1.4:5173
+              ws://localhost:5173
+              wss://localhost:5173
+              ws://192.168.1.4:5173
+              wss://192.168.1.4:5173
+              https://auctionbay.medenijazbec.pro
+              wss://auctionbay.medenijazbec.pro;
+  frame-ancestors 'none';
+">
+
+    <!-- ──────────────────────────────────────────────────────────────── -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

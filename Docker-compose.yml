@@ -1,0 +1,20 @@
+version: "3.8"
+
+networks:
+  npm-network:
+    external: true    # use the same network NPM lives on
+
+services:
+  auctionbay-frontend:
+    build: .
+    image: auctionbay-frontend:prod
+    container_name: auctionbay-frontend
+    restart: unless-stopped
+
+    # No need to expose to host—NPM will proxy to it
+    # but we expose in the network for health checks if you like:
+    ports:
+      - "9696:80"    # optional, for direct access on NAS:9696
+
+    networks:
+      - npm-network

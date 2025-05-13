@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Geotagger – Explore the World</title>
+  <!-- Roboto font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Page-scoped CSS module -->
+  <link rel="stylesheet" href="landing.module.css" />
+</head>
+<body class="container">
+  <header class="header">
+<div class="logo">
+      <!-- icon + text instead of one combined image -->
+      <img
+        src="../images/geotagger-logo-horizontal.png"
+        alt="Geotagger icon"
+        class="logo__icon"
+      />
+      <span class="logo__text">Geotagger</span>
+    </div>
+    <nav class="nav">
+      <a href="/signin" class="nav__link">Sign in</a>
+      <span class="nav__sep">or</span>
+      <a href="/signup" class="btn btn--primary">Sign up</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero__text">
+        <h1 class="hero__title">Explore the world with Geotagger!</h1>
+        <p class="hero__subtitle">
+          Geotagger is a website that allows you to post a picture and tag it on the map.
+          Other users then try to locate it via Google Maps.
+        </p>
+        <a href="/signup" class="btn btn--primary btn--large">Sign up</a>
+      </div>
+      <div class="hero__image-wrapper">
+        <img
+          src="../images/worldmap.svg"
+          alt=""
+          aria-hidden="true"
+          class="hero__image"
+        />
+      </div>
+    </section>
+
+    <!-- DEMO CARDS (locked) -->
+    <section class="demo">
+      <h2 class="demo__title">Try yourself at Geotagger!</h2>
+      <p class="demo__desc">
+        Try to guess the location of an image by selecting a position on the map.
+        When you guess it, it gives you the error distance.
+      </p>
+
+      <div class="demo__cards">
+        <div class="demo__card card--1">
+          <div class="demo__overlay">
+            <span class="icon-lock"></span>
+          </div>
+        </div>
+        <div class="demo__card card--2">
+          <div class="demo__overlay">
+            <span class="icon-lock"></span>
+          </div>
+        </div>
+        <div class="demo__card card--3">
+          <div class="demo__overlay">
+            <span class="icon-lock"></span>
+          </div>
+        </div>
+      </div>
+
+      <a href="/signup" class="btn btn--primary">Sign up</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__left">© 2025 Geotagger</div>
+    <div class="footer__right">
+      All Rights Reserved | <a href="https://skillupmentor.com">skillupmentor.com</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,268 @@
+/* make the page background match the dark mockup */
+:global(body) {
+  background-color: #e9e9e9;
+  margin: 0;
+  padding: 0;
+}
+/* ─── Container ───────────────────────────────────────── */
+.container {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 32px 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+.heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: #20232A;
+  margin-bottom: 24px;
+}
+/* ─── Form Groups ─────────────────────────────────────── */
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 16px;
+  margin-bottom: 24px;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.formGroup label {
+  font-size: 14px;
+  color: #20232A;
+  margin-bottom: 8px;
+}
+.formCol {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+  text-align: left;
+}
+.formCol > label {
+  font-size: 14px;
+  color: #20232A;
+  margin-bottom: 8px;
+}
+/* ─── Inputs ──────────────────────────────────────────── */
+input {
+  height: 48px;
+  width: 100%;
+  border: 1px solid #DCE8E1;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 14px;
+  color: #20232A;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus {
+  border-color: #A8C0B9;
+  box-shadow: 0 0 0 3px rgba(168, 192, 185, 0.3);
+}
+input:read-only {
+  background: #F6F8F7;
+}
+/* ─── Link‑style buttons ──────────────────────────────── */
+.linkBtn {
+  display: block;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #20232A;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.linkBtn:hover {
+  text-decoration: underline;
+}
+/* ─── Footer buttons ─────────────────────────────────── */
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+}
+.cancelBtn {
+  background: #EDF2F1;
+  color: #20232A;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.cancelBtn:hover:not(:disabled) {
+  background: #E0E6E3;
+}
+.saveBtn {
+  background: #FBFF00;
+  color: #000000;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.saveBtn:hover:not(:disabled) {
+  background: #E6F500;
+}
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+/* ─── Bottom row for logout & homepage ───────────────── */
+.bottomRow {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 64px;
+}
+/* ─── Logout / Homepage buttons ───────────────────────── */
+.logout {
+  background: none;
+  border: 1px solid #20232A;
+  border-radius: 12px;
+  padding: 10px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #20232A;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.logout:hover {
+  background: #20232A;
+  color: #ffffff;
+}
+/* ─── Flash Messages ─────────────────────────────────── */
+.okMsg {
+  color: #4BB543;
+  margin-top: 16px;
+}
+.errMsg {
+  color: #FF5252;
+  margin-top: 16px;
+}
+/* ─── Modal ──────────────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modalBody {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px 40px;
+  width: 480px;
+  max-width: 90vw;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+.modalTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #20232A;
+  margin-bottom: 24px;
+}
+.modalForm label {
+  display: block;
+  font-size: 14px;
+  color: #20232A;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+/* inherits main input style */
+.modalForm input {
+}
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+}
+/* ─── Avatar & Upload ────────────────────────────────── */
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 24px;
+  border: 2px solid #20232A;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.uploadBtn {
+  display: inline-block;
+  background: none;
+  border: 1px solid #20232A;
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #20232A;
+  cursor: pointer;
+  margin: 0 auto 32px;
+  transition: background 0.2s;
+}
+.uploadBtn:hover {
+  background: #e9e9e9;
+}
+/* ─── Empty / Error State ────────────────────────────── */
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+.emptyStateTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #20232A;
+}
+.emptyStateDesc {
+  font-size: 1rem;
+  color: #555555;
+  margin-bottom: 2rem;
+}
+.retryBtn {
+  background: #FBFF00;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.retryBtn:hover {
+  background: #E6F500;
+}
+/* utility for disabled */
+*:disabled {
+  cursor: not-allowed;
+}
+/* ───────────── cropper wrapper ───────────── */
+.cropContainer {
+  margin: 0 auto 24px;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  --react-easy-crop-mask-background: transparent;
+  border: 2px solid #3b3b3b;
+}
+.cropContainer .reactEasyCrop_CropArea, .cropContainer .reactEasyCrop_Media {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+}

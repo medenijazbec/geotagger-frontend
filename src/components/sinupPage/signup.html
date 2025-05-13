@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Geotagger – Sign up</title>
+  <!-- Roboto -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="signup.module.css" />
+</head>
+<body class="signup">
+  <!-- LEFT PANEL: form -->
+  <div class="panel panel--left">
+    <header class="signup__header">
+      <!-- full gradient logo + styled text -->
+      <img
+        src="../images/logo_gradient.png"
+        alt="Geotagger logo"
+        class="logo__icon"
+      />
+      <span class="logo__text">
+        <span class="logo__text--primary">Geo</span>tagger
+      </span>
+    </header>
+
+    <form class="signup__form" action="/signup" method="POST">
+      <h1 class="signup__title">Sign up</h1>
+      <p class="signup__subtitle">
+        Your name will appear on posts and your public profile.
+      </p>
+
+      <div class="avatar">
+        <img
+          src="../images/profile_white.png"
+          alt="User avatar placeholder"
+        />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="hey@geotagger.com"
+          required
+        />
+      </div>
+
+      <div class="field-group">
+        <div class="field half">
+          <label for="firstName">First name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            placeholder="John"
+            required
+          />
+        </div>
+        <div class="field half">
+          <label for="lastName">Last name</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            placeholder="Doe"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-icon">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            required
+          />
+          <span class="icon icon--eye"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password2">Repeat password</label>
+        <div class="input-icon">
+          <input
+            type="password"
+            id="password2"
+            name="password2"
+            placeholder="••••••••"
+            required
+          />
+          <span class="icon icon--eye"></span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--full">
+        Sign up
+      </button>
+
+      <p class="signup__footer-text">
+        Already have an account?
+        <a href="/signin" class="link--primary">Sign in</a>
+      </p>
+    </form>
+  </div>
+
+  <!-- RIGHT PANEL: tinted map + white logo -->
+  <div class="panel panel--right">
+    <img
+      src="../images/signinMap.png"
+      alt=""
+      aria-hidden="true"
+      class="map"
+    />
+    <div class="overlay"></div>
+    <div class="right-logo-wrapper">
+      <img
+        src="../images/logo_gradient_white.png"
+        alt="Geotagger"
+        class="right-logo"
+      />
+    </div>
+  </div>
+</body>
+</html>

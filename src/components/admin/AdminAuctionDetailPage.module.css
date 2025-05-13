@@ -1,0 +1,330 @@
+/* ───────── Global reset (kept global, not scoped) ───────── */
+:global(*) {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  :global(body) {
+    font-family: Arial, sans-serif;
+    background: #f8f8f7;
+  }
+  /* ───────── Layout ───────── */
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .title {
+    text-align: left;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 1rem;
+  }
+  .imageContainer {
+    flex: 1;
+  }
+  .imageContainer img {
+    width: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+  }
+  .infoContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+/* Stretch out the description textarea in admin detail */
+.infoContainer textarea {
+    width: 100%;
+    min-height: 120px;       /* allow room for multiple lines */
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;        /* user can drag to grow/shrink */
+    overflow: auto;
+    box-sizing: border-box;
+  }
+
+  /* ───────── “top card” ───────── */
+  .topSection {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+  .statusTime {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .status {
+    background: #fdd;
+    color: rgb(204, 106, 106);
+    padding: 0.3rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  /* ─── STATE COLORS ────────────────────────────────────── */
+  .outbid {
+    background:#FFB3AB;
+    color:#071015;
+  }
+  .editable {
+    background:#FBFF00;
+    color:#071015;
+  }
+  .winning {
+    background:#B2F0B2;
+    color:#137513;
+  }
+  .done {
+    background:#333;
+    color:#fff;
+  }
+  /* ─── NEUTRAL FOR TIME > 1h ───────────────────────────── */
+  .neutral {
+    background: transparent;
+    color: #071015;
+  }
+  /* ─── TAG BASE ───────────────────────────────────────── */
+  .tag {
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* ─── STATE COLOURS ─────────────────────────────────── */
+  .outbid {
+    background-color: #FFB3AB;
+    color: #071015;
+  }
+  .inProgress {
+    background-color: #f4ff47;
+    color: #071015;
+  }
+  .winning {
+    background-color: #B2F0B2;
+    color: #137513;
+  }
+  .done {
+    background-color: #333;
+    color: #fff;
+  }
+  /* ─── TIME TAG BASE ─────────────────────────────────── */
+  .time-tag {
+    border-radius: 999px;
+    padding: 1px 12px;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* ─── TIME TAG VARIANTS ────────────────────────────── */
+  /* >1h left */
+  .neutral {
+    background: transparent;
+    color: #071015;
+  }
+  /* ≤1h left */
+  .urgent {
+    background-color: #FFB3AB;
+    color: #071015;
+  }
+  .clockIcon {
+    width: 16px;
+    height: 16px;
+  }
+  .description {
+    text-align: left;
+    color: #000;
+    word-break: break-word;
+    white-space: pre-wrap;
+    margin: 1rem 0 1.5rem;
+  }
+  .tag {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+   /* not bold */
+  }
+  .outbid {
+    background:#FFB3AB;
+    color:#071015;
+  }
+  .editable {
+    background:#FBFF00;
+    color:#071015;
+  }
+  .winning {
+    background:#B2F0B2;
+    color:#137513;
+  }
+  .done {
+    background:#333;
+    color:#fff;
+  }
+  /* ---------- bid form ---------- */
+  .bidAction {
+    display: flex;
+    justify-content: flex-end;
+   /* push to the right */
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .bidAction input, .bidAction button {
+    height: 46px;
+    border-radius: 18px;
+  }
+  .bidAction button {
+    background: #FBFF00;
+    border: none;
+    padding: 0 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .bidAction input {
+    width: 90px;
+  }
+  .bidAction button {
+    padding: 0 1.4rem;
+  }
+  /* ───────── bid history card ───────── */
+  .biddingHistory {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+  .biddingHistory h2 {
+    margin-bottom: 1rem;
+  }
+  .bidEntry {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+  }
+  /* avatar + name container */
+  .bidEntry img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 0.5rem;
+   /* ← remove or shrink */
+  }
+  .bidAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 0.75rem;
+   /* small gap to name */
+  }
+  .bidInfo {
+   /* stop it from expanding to fill the row */
+    flex: 0 1 auto;
+    font-weight: 500;
+    color: #333;
+   /* margin-right: 1rem;
+    */
+  }
+  .bidInfo span {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 0.25rem;
+  }
+  /* timestamp cell (middle column) */
+  .timestamp {
+    margin-left: auto;
+    margin-right: 1rem;
+   /* gap between time and amount */
+    font-size: 0.85rem;
+    color: #777;
+  }
+  /* amount pill (right column) */
+  .amount {
+    flex: 0 0 auto;
+   /* don’t grow or shrink */
+    background: #FBFF00;
+    padding: 0.2rem 1.4rem;
+    border-radius: 18px;
+    font-weight: 600;
+  }
+  /* loading / error */
+  .message {
+    text-align: left;
+    padding: 2rem;
+    font-size: 1.25rem;
+  }
+  .emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+   /* take up all remaining space under the heading */
+    height: calc(100% - 2rem);
+    text-align: center;
+    color: #555;
+    margin: 5rem;
+    padding-bottom: 12rem;
+  }
+  .emptyState h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    color: #000;
+  }
+  .emptyState p {
+    font-size: 0.9rem;
+  }
+  /* ─── STATE COLORS ────────────────────────────────────── */
+  .outbid {
+    background:#FFB3AB;
+    color:#071015;
+  }
+  .editable {
+    background:#FBFF00;
+    color:#071015;
+  }
+  .winning {
+    background:#B2F0B2;
+    color:#137513;
+  }
+  .done {
+    background:#333;
+    color:#fff;
+  }
+  /* ─── NEUTRAL FOR TIME > 1h ───────────────────────────── */
+  .neutral {
+    background: transparent;
+    color: #071015;
+  }
+  .urgent {
+    background-color: #FFB3AB;
+    color: #071015;
+  }
+  .clockIcon {
+    width: 16px;
+    height: 16px;
+  }
+  .bidAction button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        font-size: 200px;
+      }
+
+      .cls-2 {
+        font-family: "TwCenMT-BoldItalic";
+        font-weight: bold;
+        font-style: italic;
+      }
+    </style>
+  </defs>
+  <image xlink:href="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP4AAAD+AgMAAABn+FDCAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACVBMVEUAAAD0/0cAAADBxxXHAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAJ+SURBVHja7ZtJjsMwDATtg56g//gJc4j+/5WZJEbGixaSZUCMId1ZYLfkLBZ7mqprTo/JvkJal7E+/a8fQ/mctksvZF+vJxzr1YR0XiofYgaQFiJAKSLll1hELACkIuZSvVREsQFhC+UGhC1UGhC1UGtA1EK1AUEL9QYELYQGoPnh0qpvHcdmA60WYhtQt7FdX9cgUFDXIFBQ1dA6BO9VOQoiBTUNsvqyjTIFFQ1CBWUNoj2o7YO0vmSCWEFJAwbI6/MapJv4XA+oIK8BAzT1ORM0FmRNUCnIacAAXX3GBArQeZhxUWnB2YSoBSzMgpMJWgtOJmCA2sOji2oPjy5igL5+vw16Dw8uYkAwABL0cO+ipX7nIgVYPNy5iAHBBEhwE7bbgAG2+s02UIBtEzbbgAHBCEiXAaIVsFwFsNZ/9pECrLv42UcMCGZA8gKIdsDiBGCvX08SBdjP0XqS+gMCACQfgEgAyz0ApP51lr8fQB6F18MwAPBhfD6OA3ABIDLAMgADMAArgNX/fbMMwC0AkQE8HOUBGAAfgMAAHn5k3QDQ///CDQD9/7k6AEQC8PEKBAMCAfh4Fdb/fSIG9H+r6+DNNgYEO8DLBUX/W57+N10ObvuCFXDZjWf/W9/+N98Obv+DDfCpdzCD0X8OhY/SBAtgU+9gHgmPVDmYCgt6wK7ewWweHi/kA45qFw/1fMiz/5yqg1ldPG6MB54dzGzjsXM8+O5gdh/HD3gAQqyhUM9DIDiGwoMwOIqDw0A8joQDUTySJdAw1RdUcEEwDkfzcDiQxxNxQJJHNHFIlMdUcVCWR3V5WBjHlXlgmke2cWicx9YnHJyfeHT/LaTV/C8g7Fc/awi/MAAAAABJRU5ErkJggg==" x="1" y="1" width="254" height="254"/>
+  <text x="80" y="171" class="cls-1"><tspan class="cls-2">a</tspan></text>
+</svg>
