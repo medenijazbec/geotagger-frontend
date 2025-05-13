@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Geotagger – Edit Location</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet" />
+  <link rel="stylesheet" href="location-edit.module.css" />
+</head>
+<body class="home">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <img src="../images/logo_gradient.png" alt="Geotagger" class="logo__icon"/>
+      <span class="logo__text">
+        <span class="logo__text--primary">Geo</span>tagger
+      </span>
+    </div>
+    <nav class="topbar__nav">
+      <a href="/home" class="topbar__link">Home</a>
+      <a href="/profile" class="topbar__link">Profile settings</a>
+      <a href="/logout" class="topbar__link">Logout</a>
+
+      <div class="topbar__points">
+        <div class="points__avatar">
+          <img src="../images/profile_white.png" alt="Avatar" class="points__icon"/>
+        </div>
+        <span class="points__value">10</span>
+      </div>
+
+      <button class="btn btn--icon">
+        <img src="../images/plus.png" alt="Add" />
+      </button>
+    </nav>
+  </header>
+
+  <!-- EDIT LOCATION MAIN -->
+  <main class="edit-location">
+    <h1 class="edit-location__title">
+      Edit <span class="edit-location__highlight">location</span>.
+    </h1>
+
+    <div class="edit-location__banner">
+      <img src="../images/placeholder_places1.png"
+           alt="Current location image" />
+    </div>
+
+    <p class="edit-location__info">
+      Location: Liegue St 523, Monaco
+    </p>
+
+    <div class="upload-btn-wrapper">
+      <button class="btn btn--outline">Upload image</button>
+    </div>
+
+    <div class="edit-location__actions">
+      <button class="btn btn--primary">Save</button>
+      <button class="btn btn--link">Cancel</button>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__left">© 2025 Geotagger</div>
+    <div class="footer__right">
+      All Rights Reserved | <a href="https://skillupmentor.com">skillupmentor.com</a>
+    </div>
+  </footer>
+</body>
+</html>
