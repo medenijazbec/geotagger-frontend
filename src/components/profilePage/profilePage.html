@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Geotagger – Profile</title>
+  <!-- Roboto -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="profilePage.module.css" />
+</head>
+<body class="home">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <img src="../images/logo_gradient.png" alt="Geotagger" class="logo__icon"/>
+      <span class="logo__text">
+        <span class="logo__text--primary">Geo</span>tagger
+      </span>
+    </div>
+    <nav class="topbar__nav">
+      <a href="/home" class="topbar__link">Home</a>
+      <a href="/profile" class="topbar__link">Profile settings</a>
+      <a href="/logout" class="topbar__link">Logout</a>
+
+      <div class="topbar__points">
+        <div class="points__avatar">
+          <img src="../images/profile_white.png" alt="Avatar" class="points__icon"/>
+        </div>
+        <span class="points__value">10</span>
+      </div>
+
+      <button class="btn btn--icon">
+        <img src="../images/plus.png" alt="Add" />
+      </button>
+    </nav>
+  </header>
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <img src="../images/profile_white.png" alt="Jacob Jones" />
+    </div>
+    <h1 class="profile-name">Jacob Jones</h1>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <!-- MY BEST GUESSES -->
+    <section class="section">
+      <h2 class="section__title">My best guesses</h2>
+      <div class="cards cards--best">
+        <div class="card"><span class="card__label">256 m</span></div>
+        <div class="card"><span class="card__label">544 m</span></div>
+        <div class="card"><span class="card__label">755 m</span></div>
+        <div class="card"><span class="card__label">900 m</span></div>
+      </div>
+      <button class="btn btn--outline section__btn">Load more</button>
+    </section>
+
+    <!-- MY UPLOADS -->
+    <section class="section">
+      <h2 class="section__title">My uploads</h2>
+      <div class="cards cards--uploads">
+        <div class="card upload-card">
+          <button class="edit-btn">
+            <img src="../images/pencil.png" alt="Edit" />
+          </button>
+          <button class="delete-btn">
+            <img src="../images/x.png" alt="Delete" />
+          </button>
+        </div>
+        <div class="card upload-card">
+          <button class="edit-btn">
+            <img src="../images/pencil.png" alt="Edit" />
+          </button>
+          <button class="delete-btn">
+            <img src="../images/x.png" alt="Delete" />
+          </button>
+        </div>
+        <div class="card upload-card">
+          <button class="edit-btn">
+            <img src="../images/pencil.png" alt="Edit" />
+          </button>
+          <button class="delete-btn">
+            <img src="../images/x.png" alt="Delete" />
+          </button>
+        </div>
+        <div class="card upload-card">
+          <button class="edit-btn">
+            <img src="../images/pencil.png" alt="Edit" />
+          </button>
+          <button class="delete-btn">
+            <img src="../images/x.png" alt="Delete" />
+          </button>
+        </div>
+      </div>
+      <button class="btn btn--outline section__btn">Load more</button>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__left">© 2025 Geotagger</div>
+    <div class="footer__right">
+      All Rights Reserved | <a href="https://skillupmentor.com">skillupmentor.com</a>
+    </div>
+  </footer>
+</body>
+</html>

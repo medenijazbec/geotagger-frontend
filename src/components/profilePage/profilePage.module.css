@@ -1,0 +1,279 @@
+:root {
+  --color-primary: #659e89;
+  --color-primary-dark: #233d4d;
+  --font-base: 'Roboto', sans-serif;
+  --color-delete: #c44c43;
+}
+
+/* RESET */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-base);
+  color: var(--color-primary-dark);
+}
+
+/* LAYOUT */
+.home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+.topbar__left {
+  display: flex;
+  align-items: center;
+}
+.logo__icon {
+  height: 42px;
+  width: auto;
+}
+.logo__text {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+.logo__text--primary {
+  color: var(--color-primary);
+}
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.topbar__link {
+  text-decoration: none;
+  color: var(--color-primary-dark);
+  font-size: 0.95rem;
+}
+.topbar__link:hover {
+  text-decoration: underline;
+}
+
+/* POINTS BADGE */
+.topbar__points {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--color-primary);
+  border-radius: 50px;
+  /* no left padding: avatar sits flush to the frame */
+  padding-right:1rem;
+  gap: 1rem;
+}
+.points__avatar {
+  width: 40px;
+  height: 40px;
+  background: #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.points__icon {
+  width: 16px;
+  height: 16px;
+}
+.points__value {
+  font-weight: bold;
+}
+
+/* PLUS BUTTON */
+.btn--icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: none;
+  cursor: pointer;
+}
+.btn--icon img {
+  width: 16px;
+  height: 16px;
+}
+
+/* PROFILE HEADER */
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  background: #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-avatar img {
+  width: 32px;
+  height: 32px;
+}
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+/* MAIN CONTENT */
+.main {
+  flex: 1;
+  padding: 2rem;
+}
+.section {
+  margin-bottom: 3rem;
+}
+.section__title {
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+/* MY BEST GUESSES */
+.cards--best {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.cards--best .card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(101, 158, 137, 0.6);
+  border-radius: 8px;
+}
+
+/* MY UPLOADS */
+.cards--uploads {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* SHARED CARD STYLES */
+.card {
+  position: relative;
+  flex: 1;
+  height: 300px;
+  background: url('../images/placeholder_places1.png') center/cover no-repeat;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* CARD LABEL (for best guesses only) */
+.card__label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+/* EDIT + DELETE BUTTONS */
+.upload-card .edit-btn,
+.upload-card .delete-btn {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.upload-card .edit-btn {
+  top: 8px;
+  left: 8px;
+  background: var(--color-primary);
+}
+.upload-card .delete-btn {
+  top: 8px;
+  right: 8px;
+  background: var(--color-delete);
+}
+.upload-card .edit-btn img,
+.upload-card .delete-btn img {
+  width: 16px;
+  height: 16px;
+}
+
+/* LOAD MORE BUTTON */
+.section__btn {
+  display: block;
+  margin: 0 auto;
+}
+
+/* OUTLINE BUTTON */
+.btn--outline {
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-primary);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn--outline:hover {
+  opacity: 0.85;
+}
+
+/* FOOTER */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 1rem 2rem;
+  font-size: 0.9rem;
+}
+.footer a {
+  color: #fff;
+  text-decoration: underline;
+}
+/* PLUS BUTTON */
+.btn--icon {
+  padding: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: inline-flex;           /* treat as flex so content is centered */
+  align-items: center;
+  justify-content: center;
+  padding: 0;                     /* no extra padding */
+  width: 40px;                    /* same width/height */
+  height: 40px;
+  border-radius: 50%;             /* full circle */
+  background: var(--color-primary);
+  border: none;
+  cursor: pointer;
+}
+.btn--icon img {
+  width: 16px;                    /* icon size */
+  height: 16px;
+}
