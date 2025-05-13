@@ -1,0 +1,214 @@
+:root {
+  --color-primary: #659e89;
+  --color-primary-dark: #233d4d;
+  --font-base: 'Roboto', sans-serif;
+}
+
+/* RESET */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-base);
+  color: var(--color-primary-dark);
+}
+
+/* LAYOUT */
+.home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+.topbar__left {
+  display: flex;
+  align-items: center;
+}
+.logo__icon {
+  height: 42px;
+  width: auto;
+}
+.logo__text {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+.logo__text--primary {
+  color: var(--color-primary);
+}
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.topbar__link {
+  text-decoration: none;
+  color: var(--color-primary-dark);
+  font-size: 0.95rem;
+}
+.topbar__link:hover {
+  text-decoration: underline;
+}
+
+/* POINTS BADGE */
+.topbar__points {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--color-primary);
+  border-radius: 50px;
+  /* no left padding: avatar sits flush to the frame */
+  padding-right:1rem;
+  gap: 1rem;
+}
+.points__avatar {
+  width: 40px;
+  height: 40px;
+  background: #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.points__icon {
+  width: 16px;
+  height: 16px;
+}
+.points__value {
+  font-weight: bold;
+}
+
+
+
+
+/* MAIN CONTENT */
+.main {
+  flex: 1;
+  padding: 2rem;
+}
+.section {
+  margin-bottom: 3rem;
+}
+.section__title {
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+.section__subtitle {
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* PERSONAL BEST GUESS CARDS */
+.cards {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+/* green tint only on cards in the .cards--best container */
+.cards--best > .card:nth-child(-n+3)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(101, 158, 137, 0.6);
+  border-radius: 8px;
+}
+
+/* GRID OF NEW LOCATION CARDS */
+.cards--grid {
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* CARD STYLES */
+.card {
+  background: url('../images/placeholder_places1.png') center/cover no-repeat;
+  border-radius: 8px;
+  position: relative;
+  flex: 1;
+  height: 400px;
+  min-width: calc((100% - 2rem)/3);
+}
+.card__label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+/* LOAD MORE BUTTON */
+.section__btn {
+  display: block;
+  margin: 0 auto;
+}
+
+/* GENERIC BUTTONS */
+.btn {
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+.btn--outline {
+  background: #fff;
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-primary);
+  padding: 0.5rem 1rem;
+}
+.btn--outline:hover {
+  opacity: 0.85;
+}
+
+/* FOOTER */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 1rem 2rem;
+  font-size: 0.9rem;
+}
+.footer a {
+  color: #fff;
+  text-decoration: underline;
+}
+/* PLUS BUTTON */
+.btn--icon {
+  padding: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: inline-flex;           /* treat as flex so content is centered */
+  align-items: center;
+  justify-content: center;
+  padding: 0;                     /* no extra padding */
+  width: 40px;                    /* same width/height */
+  height: 40px;
+  border-radius: 50%;             /* full circle */
+  background: var(--color-primary);
+  border: none;
+  cursor: pointer;
+}
+.btn--icon img {
+  width: 16px;                    /* icon size */
+  height: 16px;
+}
