@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Geotagger – Add Location</title>
+  <!-- Roboto -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="location.module.css" />
+</head>
+<body class="home">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <img src="../images/logo_gradient.png" alt="Geotagger" class="logo__icon"/>
+      <span class="logo__text">
+        <span class="logo__text--primary">Geo</span>tagger
+      </span>
+    </div>
+    <nav class="topbar__nav">
+      <a href="/home" class="topbar__link">Home</a>
+      <a href="/profile" class="topbar__link">Profile settings</a>
+      <a href="/logout" class="topbar__link">Logout</a>
+
+      <div class="topbar__points">
+        <div class="points__avatar">
+          <img src="../images/profile_white.png" alt="Avatar" class="points__icon"/>
+        </div>
+        <span class="points__value">10</span>
+      </div>
+
+      <button class="btn btn--icon">
+        <img src="../images/plus.png" alt="Add" />
+      </button>
+    </nav>
+  </header>
+
+  <!-- ADD LOCATION MAIN -->
+  <main class="add-location">
+    <h1 class="add-location__title">
+      Add a new <span class="add-location__highlight">location</span>.
+    </h1>
+
+    <div class="upload-preview">
+      <img src="../images/placeholder-image.png" alt="Upload preview" />
+    </div>
+    <button class="btn btn--outline upload-preview__btn">Upload image</button>
+
+    <div class="map-preview">
+      <img src="../images/placeholder-image.png" alt="Map preview" />
+    </div>
+
+    <form class="location-form">
+      <label for="location" class="location-form__label">Location</label>
+      <input
+        type="text"
+        id="location"
+        name="location"
+        class="location-form__input"
+        placeholder="Enter a place name or coordinates"
+        required
+      />
+      <button type="submit" class="btn btn--primary add-location__btn">
+        Add new
+      </button>
+    </form>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__left">© 2025 Geotagger</div>
+    <div class="footer__right">
+      All Rights Reserved | <a href="https://skillupmentor.com">skillupmentor.com</a>
+    </div>
+  </footer>
+</body>
+</html>
