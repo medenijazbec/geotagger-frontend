@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport"
+        content="width=device-width,initial-scale=1.0"/>
+  <title>Geotagger – Take a Guess</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet"/>
+  <link rel="stylesheet" href="location-guess.module.css"/>
+</head>
+<body class="home">
+  <!-- HEADER / TOPBAR -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <img src="../images/logo_gradient.png" alt="Geotagger" class="logo__icon"/>
+      <span class="logo__text">
+        <span class="logo__text--primary">Geo</span>tagger
+      </span>
+    </div>
+    <nav class="topbar__nav">
+      <a href="/home" class="topbar__link">Home</a>
+      <a href="/profile" class="topbar__link">Profile settings</a>
+      <a href="/logout" class="topbar__link">Logout</a>
+
+      <div class="topbar__points">
+        <div class="points__avatar">
+          <img src="../images/profile_white.png" alt="Avatar" class="points__icon"/>
+        </div>
+        <span class="points__value">10</span>
+      </div>
+
+      <button class="btn btn--icon">
+        <img src="../images/plus.png" alt="Add" />
+      </button>
+    </nav>
+  </header>
+
+  <!-- MAIN GUESS UI -->
+  <div class="guess-page">
+    <section class="guess-page__left">
+      <h1 class="guess-page__title">
+        Take a <span class="highlight">guess</span>!
+      </h1>
+
+      <div class="banner">
+        <img src="../images/placeholder_places3.png"
+             alt="Location to guess"/>
+      </div>
+
+      <div class="map-preview">
+        <img src="../images/signinMap.png"
+             alt="Map preview"/>
+      </div>
+
+      <form class="guess-form">
+        <div class="guess-form__group">
+          <label for="guessed">Guessed location</label>
+          <input type="text" id="guessed"
+                 placeholder="Enter location…"/>
+        </div>
+        <div class="guess-form__group">
+          <label for="error">Error distance</label>
+          <input type="text" id="error"
+                 placeholder="e.g. 23 m"/>
+        </div>
+        <button type="submit"
+                class="btn btn--primary guess-form__btn">
+          Guess
+        </button>
+      </form>
+    </section>
+
+    <aside class="guess-page__right">
+      <h2>Leaderboard</h2>
+      <ul class="leaderboard">
+        <li class="leaderboard__item">
+          <div class="leaderboard__left">
+            <div class="rank">1</div>
+            <div class="avatar-sm">
+              <img src="../images/profiles.png"
+                   alt="Elanor Pera"/>
+            </div>
+            <div class="user-info">
+              <span class="user-name">Elanor Pera</span>
+              <span class="user-date">23. 4. 2021</span>
+            </div>
+          </div>
+          <div class="distance">5 m</div>
+        </li>
+        <li class="leaderboard__item">
+          <div class="leaderboard__left">
+            <div class="rank" style="background:#bbb">2</div>
+            <div class="avatar-sm">
+              <img src="../images/profiles.png"
+                   alt="Elmer Laverty"/>
+            </div>
+            <div class="user-info">
+              <span class="user-name">Elmer Laverty</span>
+              <span class="user-date">4. 5. 2021</span>
+            </div>
+          </div>
+          <div class="distance">10 m</div>
+        </li>
+        <!-- …add more entries as needed… -->
+      </ul>
+    </aside>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>© 2025 Geotagger</div>
+    <div>
+      All Rights Reserved | 
+      <a href="https://skillupmentor.com">skillupmentor.com</a>
+    </div>
+  </footer>
+</body>
+</html>
