@@ -13,6 +13,7 @@ import SigninPage  from './components/singInPage/signInPage';
 import SingupPage  from './components/signUpPage/singUpPage';
 import HomePage from './components/homePage/homePage';
 import ProfilePage       from './components/profilePage/profilePage';
+import AddLocationPage from './components/addLocationPage/AddLocationPage';
 
 // auth guard
 import RequireAuth from './components/RequireAuth';
@@ -35,6 +36,16 @@ export function App() {
                 </RequireAuth>
               }
             />
+
+
+            <Route
+  path="/add-location"
+  element={
+    <RequireAuth>
+      <AddLocationPage />
+    </RequireAuth>
+  }
+/>
         {/* Protected */}
         <Route
           path="/profile"
