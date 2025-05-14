@@ -283,3 +283,56 @@ html, body {
   font-size: 0.9rem;
   color: #333;
 }
+/* — stretch the search bar full width — */
+.location-form {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.searchWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.location-form__input {
+  width: 100%;
+}
+
+/* — error message — */
+.errorMsg {
+  color: #b00020;
+  text-align: center;
+  margin: 0.5rem 0 1rem;
+}
+
+/* — success-modal-card overlay — */
+.modalCardOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalCard {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.modalCardText {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+
+
+

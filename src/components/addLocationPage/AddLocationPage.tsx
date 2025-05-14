@@ -75,6 +75,7 @@ const AddLocationPage: React.FC = () => {
   const [lon,         setLon]         = useState<number|null>(null);
   const [flash,       setFlash]       = useState<string|null>(null);
   const [busy,        setBusy]        = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // search/type-ahead
   const [searchTerm,  setSearchTerm]  = useState('');
@@ -217,7 +218,8 @@ const AddLocationPage: React.FC = () => {
       const msg = await resp.text();
       throw new Error(msg || 'Upload failed');
     }
-    setFlash('Location added! 🎉');
+    //setFlash('Location added! ');
+    setShowSuccessModal(true);
     setTitle(''); setDesc('');
     setFile(null); setPrev(null);
     setLat(null); setLon(null);
@@ -359,12 +361,25 @@ const AddLocationPage: React.FC = () => {
         </div>
       </footer>
 
-      {/* FLASH */}
-      {flash && (
-        <div className={styles.modalOverlay} onClick={() => setFlash(null)}>
-          <div className={styles.modalBody} onClick={e => e.stopPropagation()}>
-            <p>{flash}</p>
-            <button className={styles.saveBtn} onClick={() => setFlash(null)}>Close</button>
+{/* SUCCESS-MODAL CARD */}
+      {showSuccessModal && (
+        <div
+          className={styles.modalCardOverlay}
+          onClick={() => setShowSuccessModal(false)}
+        >
+          <div
+            className={styles.modalCard}
+            onClick={e => e.stopPropagation()}
+          >
+            <p className={styles.modalCardText}>
+              Location was successfully added.
+            </p>
+            <button
+              className={`${styles.btn} ${styles['btn--primary']}`}
+              onClick={() => setShowSuccessModal(false)}
+            >
+              Dismiss
+            </button>
           </div>
         </div>
       )}
