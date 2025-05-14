@@ -14,7 +14,7 @@ import HomePage        from './components/homePage/homePage';
 import ProfilePage     from './components/profilePage/profilePage';
 import AddLocationPage from './components/addLocationPage/AddLocationPage';
 import EditLocationPage from './components/editLocationPage/EditLocationPage';
-
+import GuessLocationPage from './components/guessLocationPage/LocationGuessPage';
 import RequireAuth from './components/RequireAuth';
 
 export function App() {
@@ -52,7 +52,10 @@ export function App() {
           }
         />
 
-        {/* New: Edit a single location by ID */}
+        <Route 
+        path="/guess-location/:id" 
+        element={<GuessLocationPage />} />
+        
         <Route
           path="/edit-location/:id"
           element={

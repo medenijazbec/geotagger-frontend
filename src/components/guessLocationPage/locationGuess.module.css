@@ -1,3 +1,7 @@
+/* ──────────────────────────────────────────────────────────
+   locationGuess.module.css  – full stylesheet
+   ────────────────────────────────────────────────────────── */
+
 :root {
   --color-primary: #659e89;
   --color-primary-dark: #233d4d;
@@ -12,112 +16,125 @@
   margin: 0;
   padding: 0;
 }
-html, body {
+
+html,
+body {
   width: 100%;
   height: 100%;
   font-family: var(--font-base);
   color: var(--color-primary-dark);
 }
 
-/* LAYOUT */
+/* ─────────────────────  LAYOUT  ─────────────────────────── */
 .home {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
-header, footer {
+
+header,
+footer {
   flex-shrink: 0;
 }
 
-
-/* TOPBAR */
+/* ─────────────────────  TOP-BAR  ────────────────────────── */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
 }
+
 .topbar__left {
   display: flex;
   align-items: center;
 }
+
 .logo__icon {
   height: 42px;
   width: auto;
 }
+
 .logo__text {
   font-size: 1.25rem;
   font-weight: 400;
-  margin-left: 0.5rem;
+  margin-left: .5rem;
 }
+
 .logo__text--primary {
   color: var(--color-primary);
 }
+
 .topbar__nav {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
+
 .topbar__link {
   text-decoration: none;
   color: var(--color-primary-dark);
-  font-size: 0.95rem;
+  font-size: .95rem;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
+
 .topbar__link:hover {
   text-decoration: underline;
 }
 
-/* POINTS BADGE */
+/* ───── points badge ───── */
 .topbar__points {
   display: flex;
   align-items: center;
   border: 2px solid var(--color-primary);
   border-radius: 50px;
-  /* no left padding: avatar sits flush to the frame */
-  padding-right:1rem;
+  padding-right: 1rem;     /* avatar sits flush on left */
   gap: 1rem;
 }
+
 .points__avatar {
   width: 40px;
   height: 40px;
   background: #e0e0e0;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.points__icon {
-  width: 16px;
-  height: 16px;
+
+.points__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
+
 .points__value {
   font-weight: bold;
 }
 
-
-
-/* PLUS BUTTON */
+/* ───── round icon-button ───── */
 .btn--icon {
-  padding: 0 !important;
-  width: 40px !important;
-  height: 40px !important;
-  display: inline-flex;           /* treat as flex so content is centered */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;                     /* no extra padding */
-  width: 40px;                    /* same width/height */
+  width: 40px;
   height: 40px;
-  border-radius: 50%;             /* full circle */
+  padding: 0;
+  border-radius: 50%;
   background: var(--color-primary);
   border: none;
   cursor: pointer;
 }
+
 .btn--icon img {
-  width: 16px;                    /* icon size */
+  width: 16px;
   height: 16px;
 }
 
-/* GENERIC BUTTONS */
+/* ───── generic buttons ───── */
 .btn {
   font-size: .9rem;
   font-weight: 700;
@@ -126,22 +143,30 @@ header, footer {
   text-align: center;
   transition: opacity .2s;
 }
+
 .btn--outline {
   background: #fff;
   color: var(--color-primary-dark);
   border: 1px solid var(--color-primary);
   padding: .5rem 1rem;
 }
-.btn--outline:hover { opacity: .85; }
+
+.btn--outline:hover {
+  opacity: .85;
+}
+
 .btn--primary {
   background: var(--color-primary);
   color: #fff;
   border: none;
   padding: .75rem 1.5rem;
 }
-.btn--primary:hover { opacity: .85; }
 
-/* FOOTER */
+.btn--primary:hover {
+  opacity: .85;
+}
+
+/* ─────────────────────  FOOTER  ─────────────────────────── */
 .footer {
   display: flex;
   justify-content: space-between;
@@ -151,25 +176,27 @@ header, footer {
   padding: 1rem 2rem;
   font-size: .9rem;
 }
-.footer a { color: #fff; text-decoration: underline; }
 
-/* ================== GUESS PAGE ================== */
+.footer a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ─────────────────  GUESS PAGE LAYOUT  ──────────────────── */
 .guess-page {
   display: flex;
-  flex: 1;          /* stretch */
-  min-height: 0;    /* allow scroll */
+  flex: 1;
+  min-height: 0;      /* enable flex-child scrolling */
   gap: 1rem;
   padding: 2rem;
 }
 
-/* LEFT COLUMN */
+/* LEFT column */
 .guess-page__left {
   flex: 7;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-
-  /* allow this column to scroll when content is taller than viewport */
   min-height: 0;
   overflow-y: auto;
 }
@@ -178,16 +205,20 @@ header, footer {
   font-size: 2rem;
   font-weight: 300;
 }
+
 .guess-page__title .highlight {
   color: var(--color-primary);
 }
 
-/* only banner & map get radius/overflow */
-.banner,
-.map-preview {
+/* banner + map frame */
+.banner {
   width: 100%;
   border-radius: 6px;
   overflow: hidden;
+}
+.map-preview {
+  flex: 1 1 auto;          /* take up all remaining height */
+  min-height: 400px;       /* keep a sensible minimum     */
 }
 .banner img,
 .map-preview img {
@@ -196,26 +227,43 @@ header, footer {
   height: auto;
 }
 
-/* GUESS FORM (no clipping) */
+/* we use Leaflet, so set explicit height */
+.map-preview {
+  height: 400px;      /* change to 50vh if you prefer */
+}
+
+.leaflet-container {
+  width: 100%   !important;
+  height: 100%  !important;
+}
+
+/* live-coords helper */
+.coordsDisplay {
+  margin: .25rem 0 1rem;
+  font-size: .9rem;
+  color: #555;
+}
+
+/* ───── guess form ───── */
 .guess-form {
   display: flex;
   align-items: flex-end;
   gap: 1rem;
-
-  /* undo radius/overflow so inputs & button aren’t cut off */
-  border-radius: 0;
-  overflow: visible;
 }
+
 .guess-form__group {
   display: flex;
   flex-direction: column;
 }
+
 .guess-form__group:first-of-type { flex: 7; }
 .guess-form__group:last-of-type  { flex: 3; }
+
 .guess-form label {
   font-size: .9rem;
   margin-bottom: .25rem;
 }
+
 .guess-form input {
   padding: .6rem 1rem;
   font-size: 1rem;
@@ -224,25 +272,29 @@ header, footer {
   outline: none;
   transition: border-color .2s;
 }
+
 .guess-form input:focus {
   border-color: var(--color-primary);
 }
+
 .guess-form__btn {
   align-self: flex-end;
 }
 
-/* RIGHT COLUMN (leaderboard) */
+/* RIGHT column – leaderboard */
 .guess-page__right {
   flex: 3;
   height: 100%;
   overflow-y: auto;
   padding-left: 1rem;
 }
+
 .leaderboard {
   list-style: none;
   margin: 0;
   padding: 0;
 }
+
 .leaderboard__item {
   display: flex;
   align-items: center;
@@ -250,13 +302,16 @@ header, footer {
   padding: .75rem 0;
   border-bottom: 1px solid #eee;
 }
+
 .leaderboard__left {
   display: flex;
   align-items: center;
   gap: .75rem;
 }
+
 .rank {
-  width: 24px; height: 24px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #ccc;
   color: #fff;
@@ -265,43 +320,29 @@ header, footer {
   justify-content: center;
   font-size: .85rem;
 }
+
 .avatar-sm {
-  width: 32px; height: 32px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   overflow: hidden;
 }
+
 .avatar-sm img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+
 .user-info {
   display: flex;
   flex-direction: column;
 }
-.user-name { font-size: .95rem; font-weight: 500; }
-.user-date { font-size: .8rem; color: #666; }
+
+.user-name  { font-size: .95rem; font-weight: 500; }
+.user-date  { font-size: .8rem;  color: #666;      }
+
 .distance {
   color: var(--color-primary);
   font-weight: 700;
-}
-/* PLUS BUTTON */
-.btn--icon {
-  padding: 0 !important;
-  width: 40px !important;
-  height: 40px !important;
-  display: inline-flex;           /* treat as flex so content is centered */
-  align-items: center;
-  justify-content: center;
-  padding: 0;                     /* no extra padding */
-  width: 40px;                    /* same width/height */
-  height: 40px;
-  border-radius: 50%;             /* full circle */
-  background: var(--color-primary);
-  border: none;
-  cursor: pointer;
-}
-.btn--icon img {
-  width: 16px;                    /* icon size */
-  height: 16px;
 }
