@@ -11,7 +11,7 @@ import {
 import LandingPage from './components/landingPage/landingPage';
 import SigninPage  from './components/singInPage/signInPage';
 import SingupPage  from './components/signUpPage/singUpPage';
-
+import HomePage from './components/homePage/homePage';
 import ProfilePage       from './components/ProfilePage';
 
 // auth guard
@@ -26,7 +26,15 @@ export function App() {
         <Route path="/signin"             element={<SigninPage />} />
         <Route path="/signup"             element={<SingupPage />} />
      
-
+      {/* Authenticated “home” */}
+             <Route
+              path="/home"
+              element={
+                <RequireAuth>
+                  <HomePage />
+                </RequireAuth>
+              }
+            />
         {/* Protected */}
         <Route
           path="/profile"

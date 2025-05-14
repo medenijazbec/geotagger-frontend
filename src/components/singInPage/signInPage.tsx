@@ -1,16 +1,15 @@
+// src/components/singInPage/signInPage.tsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './signin.module.css';
 import { API_BASE } from '../../config';
 
 // static asset imports
-import gradientLogo        from '../../assets/logo_gradient.png';
-import mapImage             from '../../assets/signinMap.png';
-import logoGradientWhite    from '../../assets/logo_gradient_white.png';
-import googleIcon           from '../../assets/google-icon.png';
-import facebookIcon         from '../../assets/facebook-icon.png';
-
-
+import gradientLogo       from '../../assets/logo_gradient.png';
+import mapImage           from '../../assets/signinMap.png';
+import logoGradientWhite  from '../../assets/logo_gradient_white.png';
+import googleIcon         from '../../assets/google-icon.png';
+import facebookIcon       from '../../assets/facebook-icon.png';
 
 interface LoginResponse {
   token?: string;
@@ -24,9 +23,9 @@ const SigninPage: React.FC = () => {
   const navigate = useNavigate();
 
   // form state
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [msg, setMsg] = useState<Msg>(null);
+  const [msg, setMsg]           = useState<Msg>(null);
 
   // basic validation
   const isLoginValid =
@@ -36,13 +35,16 @@ const SigninPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setMsg(null);
+
     try {
       const resp = await fetch(`${API_BASE}/api/Auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
+
       const data: LoginResponse = await resp.json();
+
       if (!resp.ok || !data.token) {
         setMsg({
           type: 'error',
@@ -50,9 +52,12 @@ const SigninPage: React.FC = () => {
         });
         return;
       }
-      localStorage.setItem('token', data.token!);
+
+      localStorage.setItem('token', data.token);
       setMsg({ type: 'success', text: 'Login successful! Redirecting…' });
-      setTimeout(() => navigate('/', { replace: true }), 1500);
+
+      // redirect to /home instead of /
+      setTimeout(() => navigate('/home', { replace: true }), 1200);
     } catch {
       setMsg({ type: 'error', text: 'Network error. Please try again.' });
     }
@@ -69,7 +74,7 @@ const SigninPage: React.FC = () => {
     <div className={styles.signup}>
       {/* LEFT PANEL: form */}
       <div className={`${styles.panel} ${styles['panel--left']}`}>
-        <header className={styles['signup__header']}>          
+        <header className={styles['signup__header']}>
           <img
             src={gradientLogo}
             alt="Geotagger logo"
@@ -83,7 +88,7 @@ const SigninPage: React.FC = () => {
         <form className={styles['signup__form']} onSubmit={handleLogin}>
           <h1 className={styles['signup__title']}>Sign in</h1>
           <p className={styles['signup__subtitle']}>
-            Welcome back to Geotagger. We are glad that you are back.
+            Welcome back to Geotagger. We are glad that you are here.
           </p>
 
           {msg && (
@@ -103,7 +108,6 @@ const SigninPage: React.FC = () => {
             <input
               type="email"
               id="email"
-              name="email"
               placeholder="example@geotagger.com"
               required
               value={email}
@@ -117,7 +121,6 @@ const SigninPage: React.FC = () => {
               <input
                 type="password"
                 id="password"
-                name="password"
                 placeholder="•••••••••••••••"
                 required
                 value={password}
@@ -129,7 +132,7 @@ const SigninPage: React.FC = () => {
 
           <button
             type="submit"
-            className={`${styles.btn} ${styles['btn--primary']} ${styles['btn--full']}`}            
+            className={`${styles.btn} ${styles['btn--primary']} ${styles['btn--full']}`}
             disabled={!isLoginValid}
           >
             Sign in
@@ -137,27 +140,19 @@ const SigninPage: React.FC = () => {
 
           <button
             type="button"
-            className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--google']}`}            
+            className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--google']}`}
             onClick={handleGoogle}
           >
-            <img
-              src={googleIcon}
-              alt=""
-              className={styles.social__icon}
-            />
+            <img src={googleIcon} alt="" className={styles.social__icon} />
             Sign in with Google
           </button>
 
           <button
             type="button"
-            className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--facebook']}`}            
+            className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--facebook']}`}
             onClick={handleFacebook}
           >
-            <img
-              src={facebookIcon}
-              alt=""
-              className={styles.social__icon}
-            />
+            <img src={facebookIcon} alt="" className={styles.social__icon} />
             Sign in with Facebook
           </button>
 
@@ -179,7 +174,7 @@ const SigninPage: React.FC = () => {
           className={styles.map}
         />
         <div className={styles.overlay}></div>
-        <div className={styles['right-logo-wrapper']}>          
+        <div className={styles['right-logo-wrapper']}>
           <img
             src={logoGradientWhite}
             alt="Geotagger"
