@@ -1,47 +1,35 @@
 // src/App.tsx
-import React from "react";
+import React from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-} from "react-router-dom";
+} from 'react-router-dom';
 
-import LandingPage from "./components/LandingPage";
-import LoginPage from "./components/LoginPage";
-import RegisterPage from "./components/RegisterPage";
-import ForgotPasswordPage from "./components/ForgotPasswordPage";
-import ProfilePage from "./components/ProfilePage";
-import AuctionsPage from "./components/AuctionsPage";
-import AuctionDetailPage from "./components/AuctionDetailPage";
+// only the pages you actually want to use:
+import LandingPage from './components/landingPage/landingPage';
+import SigninPage  from './components/singInPage/signInPage';
+import SingupPage  from './components/signUpPage/singUpPage';
 
-// Admin / Control Panel
-import ControlPanelPage from "./components/admin/ControlPanelPage";
-import UsersPage from "./components/admin/UsersPage";
-import UserDetailPage from "./components/admin/UserDetailPage";
-import AdminAuctionsPage from "./components/admin/AdminAuctionsPage";
-import AdminAuctionDetailPage from "./components/admin/AdminAuctionDetailPage";
+import ProfilePage       from './components/ProfilePage';
 
-import RequireAuth from "./components/RequireAuth";
-import RequireAdmin from "./components/RequireAdmin";
-
-import "./App.css";
-
+// auth guard
+import RequireAuth from './components/RequireAuth';
 
 export function App() {
   return (
     <Router>
       <Routes>
         {/* Public */}
-        <Route index element={<LandingPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="landing" element={<LandingPage />} />
+        <Route path="/"                   element={<LandingPage />} />
+        <Route path="/signin"             element={<SigninPage />} />
+        <Route path="/signup"             element={<SingupPage />} />
+     
 
         {/* Protected */}
         <Route
-          path="profile"
+          path="/profile"
           element={
             <RequireAuth>
               <ProfilePage />
@@ -49,53 +37,7 @@ export function App() {
           }
         />
 
-        {/* Public auctions listing + detail */}
-        <Route
-          path="auctions"
-          element={
-            <RequireAuth>
-              <AuctionsPage />
-            </RequireAuth>
-          }
-        >
-          <Route
-            path=":id"
-            element={
-              <RequireAuth>
-                <AuctionDetailPage />
-              </RequireAuth>
-            }
-          />
-        </Route>
-
-        {/* Admin-only control panel */}
-        <Route
-          path="admin"
-          element={
-            <RequireAuth>
-              <RequireAdmin>
-                <ControlPanelPage />
-              </RequireAdmin>
-            </RequireAuth>
-          }
-        >
-          {/* default to users */}
-          <Route index element={<Navigate to="users" replace />} />
-
-          {/* /admin/users */}
-          <Route path="users" element={<UsersPage />} />
-
-          {/* /admin/users/:id */}
-          <Route path="users/:id" element={<UserDetailPage />} />
-
-          {/* /admin/auctions */}
-          <Route path="auctions" element={<AdminAuctionsPage />} />
-
-          {/* /admin/auctions/:id */}
-          <Route path="auctions/:id" element={<AdminAuctionDetailPage />} />
-        </Route>
-
-        {/* catch-all */}
+        {/* everything else → landing */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

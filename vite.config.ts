@@ -10,13 +10,15 @@ export default defineConfig({
     proxy: {
       // Proxy all /api requests to ASP.NET backend
       "/api": {
-        target: "http://192.168.1.13:8080",
+        //target: "http://192.168.1.13:8080",
+        target: "https://localhost:7120",
         secure: false,      // accept self-signed certificate
         changeOrigin: true, // rewrite the Host header to match the target
       },
       // Proxy all /images requests to the same backend
       "/images": {
-        target: "http://192.168.1.13:8080",
+        //target: "http://192.168.1.13:8080",
+        target: "https://localhost:7120",
         secure: false,
         changeOrigin: true,
       },

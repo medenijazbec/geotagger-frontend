@@ -29,35 +29,8 @@
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
 
     <!-- Content Security Policy: adjust domains as needed -->
-<meta http-equiv="Content-Security-Policy"
-content="
-  default-src 'self';
-  script-src  'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
-  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
-  font-src    'self' https://fonts.gstatic.com;
-  img-src     'self' data: blob:
-              http://192.168.1.13:8080
-              https://192.168.1.13:8080
-              http://localhost:7056
-              https://localhost:7056
-              http://localhost:5173
-              http://192.168.1.4:5173
-              https://auctionbay.medenijazbec.pro;
-  connect-src 'self'
-              http://192.168.1.13:8080
-              https://192.168.1.13:8080
-              http://localhost:7056
-              https://localhost:7056
-              http://localhost:5173
-              http://192.168.1.4:5173
-              ws://localhost:5173
-              wss://localhost:5173
-              ws://192.168.1.4:5173
-              wss://192.168.1.4:5173
-              https://auctionbay.medenijazbec.pro
-              wss://auctionbay.medenijazbec.pro;
-  frame-ancestors 'none';
-">
+    <!-- Updated CSP -->
+    
 
     <!-- ──────────────────────────────────────────────────────────────── -->
   </head>
