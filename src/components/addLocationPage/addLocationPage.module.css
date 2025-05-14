@@ -26,7 +26,7 @@ html, body {
   min-height: 100vh;
 }
 
-/* TOPBAR (unchanged) */
+/* TOPBAR */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -63,6 +63,10 @@ html, body {
   text-decoration: underline;
 }
 
+
+
+
+
 /* POINTS BADGE */
 .topbar__points {
   display: flex;
@@ -82,9 +86,11 @@ html, body {
   align-items: center;
   justify-content: center;
 }
-.points__icon {
-  width: 16px;
-  height: 16px;
+.points__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 .points__value {
   font-weight: bold;
@@ -151,6 +157,15 @@ html, body {
 .add-location__highlight {
   color: var(--color-primary);
 }
+
+
+
+
+
+
+
+
+
 
 /* UPLOAD PREVIEW */
 
@@ -332,6 +347,29 @@ html, body {
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
 }
+
+/* PLUS BUTTON */
+.btn--icon {
+  padding: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: inline-flex;           /* treat as flex so content is centered */
+  align-items: center;
+  justify-content: center;
+  padding: 0;                     /* no extra padding */
+  width: 40px;                    /* same width/height */
+  height: 40px;
+  border-radius: 50%;             /* full circle */
+  background: var(--color-primary);
+  border: none;
+  cursor: pointer;
+}
+.btn--icon img {
+  width: 16px;                    /* icon size */
+  height: 16px;
+}
+
+
 
 
 
