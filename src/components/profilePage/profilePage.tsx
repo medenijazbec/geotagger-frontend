@@ -50,12 +50,20 @@ const ProfilePage: React.FC = () => {
   if (!token) { nav('/signin'); return null; }
   const auth = { headers: { Authorization: `Bearer ${token}` } };
 
+const PAGE_SIZE = 4;
+
   /* ─ state ─ */
   const [profile , setProfile ] = useState<ProfileDto | null>(null);
   const [best    , setBest    ] = useState<BestGuessDto[]>([]);
+  const [bestPage, setBestPage] = useState(1);
+  const [bestHasMore, setBestHasMore] = useState(true);
   const [uploads , setUploads ] = useState<UploadDto[]>([]);
+  const [deleteId, setDeleteId] = useState<number| null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showDeleted, setShowDeleted] = useState(false);
   const [flash   , setFlash   ] = useState<string | null>(null);
-
+  const [uploadsPage, setUploadsPage] = useState(1);
+  const [uploadsHasMore, setUploadsHasMore] = useState(true);
   /* hover menu */
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -81,41 +89,125 @@ const ProfilePage: React.FC = () => {
 
   /* ─────────────────────────────────────────────────────────── */
 
-  useEffect(() => {
-    (async () => {
-      try {
-        /* profile */
-        const p = await fetch(`${API_BASE}/api/Profile/me`, auth);
-        if (p.ok) {
-          const info: ProfileDto = await p.json();
-          setProfile(info);
-          setFirst(info.firstName);
-          setLast (info.lastName);
-          setMail (info.email);
-        }
 
-        /* best guesses */
-        const b = await fetch(
-          `${API_BASE}/api/Guesses/personal-best?page=1&pageSize=4`,
-          auth
-        );
-        if (b.ok) setBest(await b.json());
-
-        /* uploads */
-        const u = await fetch(
-        `${API_BASE}/api/Profile/locations?page=1&pageSize=4`,
-        auth
-        );
-        if (u.ok) setUploads(await u.json());
-      } catch {
-        setFlash('Network error. Try again.');
+  
+useEffect(() => {
+  (async () => {
+    try {
+      // Load profile info
+      const p = await fetch(`${API_BASE}/api/Profile/me`, auth)
+      if (p.ok) {
+        const info: ProfileDto = await p.json()
+        setProfile(info)
+        setFirst(info.firstName)
+        setLast(info.lastName)
+        setMail(info.email)
       }
-    })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+      // oad first page of best guesses
+      {
+        const res = await fetch(
+          `${API_BASE}/api/Guesses/personal-best?page=1&pageSize=${PAGE_SIZE}`,
+          auth
+        )
+        if (res.ok) {
+          const arr: BestGuessDto[] = await res.json()
+          setBest(arr)
+          // if fewer than a full page, -> know there's no more
+          if (arr.length < PAGE_SIZE) {
+            setBestHasMore(false)
+          }
+        }
+      }
+
+      //  Load first page of uploads
+      {
+        const res = await fetch(
+          `${API_BASE}/api/Profile/locations?page=1&pageSize=${PAGE_SIZE}`,
+          auth
+        )
+        if (res.ok) {
+          const arr: UploadDto[] = await res.json()
+          setUploads(arr)
+          // same “hasMore” logic
+          if (arr.length < PAGE_SIZE) {
+            setUploadsHasMore(false)
+          }
+        }
+      }
+
+    } catch (err) {
+      console.error(err)
+      setFlash('Network error. Try again.')
+    }
+  })()
+  // only run once on mount
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [])
+
 
   /* ─ helpers ─ */
   const fullName = profile ? `${profile.firstName} ${profile.lastName}` : '';
+
+ const handleDeleteClick = (locId: number) => {
+    setDeleteId(locId);
+    setShowConfirm(true);
+  };
+  const handleCancelDelete = () => {
+    setShowConfirm(false);
+    setDeleteId(null);
+  };
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    const token = localStorage.getItem('token') || '';
+    const res = await fetch(
+      `${API_BASE}/api/locations/${deleteId}`,
+      { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (res.ok) {
+      // remove from UI immediately
+      setUploads(u => u.filter(x => x.locationId !== deleteId));
+      setShowConfirm(false);
+      setShowDeleted(true);
+    } else {
+      console.error(await res.text());
+    }
+  };
+  const handleDismissDeleted = () => {
+    setShowDeleted(false);
+  };
+
+    const loadMoreBest = async () => {
+    const next = bestPage + 1;
+    const res = await fetch(
+      `${API_BASE}/api/Guesses/personal-best?page=${next}&pageSize=${PAGE_SIZE}`,
+      auth
+    );
+    if (!res.ok) {
+      console.error('Failed to load more best guesses');
+      return;
+    }
+    const arr: BestGuessDto[] = await res.json();
+    setBest(b => [...b, ...arr]);
+    setBestPage(next);
+    if (arr.length < PAGE_SIZE) setBestHasMore(false);
+  };
+
+  const loadMoreUploads = async () => {
+    const next = uploadsPage + 1;
+    const res = await fetch(
+      `${API_BASE}/api/Profile/locations?page=${next}&pageSize=${PAGE_SIZE}`,
+      auth
+    );
+    if (!res.ok) {
+      console.error('Failed to load more uploads');
+      return;
+    }
+    const arr: UploadDto[] = await res.json();
+    setUploads(u => [...u, ...arr]);
+    setUploadsPage(next);
+    if (arr.length < PAGE_SIZE) setUploadsHasMore(false);
+  };
 
   const saveProfile = async () => {
     try {
@@ -314,8 +406,10 @@ const ProfilePage: React.FC = () => {
 
               <button
                 className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
+                onClick={loadMoreBest}
+                disabled={!bestHasMore}
               >
-                Load more
+                {bestHasMore ? 'Load more' : 'No more'}
               </button>
             </>
           )}
@@ -348,24 +442,77 @@ const ProfilePage: React.FC = () => {
                     className={`${styles.card} ${styles['upload-card']}`}
                     style={{ backgroundImage: `url(${API_BASE}${u.imageUrl})` }}
                   >
-                    <button className={styles['edit-btn']}>
-                      <img src={pencilIcon} alt="Edit"/>
-                    </button>
-                    <button className={styles['delete-btn']}>
-                      <img src={xIcon} alt="Delete"/>
-                    </button>
+               <button
+                 className={styles['edit-btn']}
+                 onClick={() => nav(`/edit-location/${u.locationId}`)}
+               >
+                 <img src={pencilIcon} alt="Edit"/>
+               </button>
+                <button
+                  className={styles['delete-btn']}
+                  onClick={() => handleDeleteClick(u.locationId)}
+                >
+                  <img src={xIcon} alt="Delete"/>
+                </button>
                   </div>
                 ))}
               </div>
 
               <button
                 className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
-              >
-                Load more
+                onClick={loadMoreUploads}
+                disabled={!uploadsHasMore}
+               >
+                
+                {uploadsHasMore ? 'Load more' : 'Looks like you have reached the end.'}
               </button>
             </>
           )}
         </section>
+
+{/* ─── CONFIRMATION MODAL ────────────────────────────────────── */}
+      {showConfirm && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2 className={styles.modalTitle}>Are you sure?</h2>
+            <p className={styles.modalText}>
+              This location will be deleted. There is no undo of this action.
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                className={styles.btnLink}
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.btnSubmit}
+                onClick={handleConfirmDelete}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── DELETED FEEDBACK MODAL ───────────────────────────────── */}
+      {showDeleted && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <p className={styles.modalText}>Your location was deleted.</p>
+            <div className={styles.modalActions}>
+              <button
+                className={styles.btnSubmit}
+                onClick={handleDismissDeleted}
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       </main>
 
       {/* ─── FOOTER ───────────────────────────────────────────── */}

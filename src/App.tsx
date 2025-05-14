@@ -7,15 +7,14 @@ import {
   Navigate,
 } from 'react-router-dom';
 
-// only the pages you actually want to use:
-import LandingPage from './components/landingPage/landingPage';
-import SigninPage  from './components/singInPage/signInPage';
-import SingupPage  from './components/signUpPage/singUpPage';
-import HomePage from './components/homePage/homePage';
-import ProfilePage       from './components/profilePage/profilePage';
+import LandingPage     from './components/landingPage/landingPage';
+import SigninPage      from './components/singInPage/signInPage';
+import SingupPage      from './components/signUpPage/singUpPage';
+import HomePage        from './components/homePage/homePage';
+import ProfilePage     from './components/profilePage/profilePage';
 import AddLocationPage from './components/addLocationPage/AddLocationPage';
+import EditLocationPage from './components/editLocationPage/EditLocationPage';
 
-// auth guard
 import RequireAuth from './components/RequireAuth';
 
 export function App() {
@@ -23,30 +22,27 @@ export function App() {
     <Router>
       <Routes>
         {/* Public */}
-        <Route path="/"                   element={<LandingPage />} />
-        <Route path="/signin"             element={<SigninPage />} />
-        <Route path="/signup"             element={<SingupPage />} />
-     
-      {/* Authenticated “home” */}
-             <Route
-              path="/home"
-              element={
-                <RequireAuth>
-                  <HomePage />
-                </RequireAuth>
-              }
-            />
+        <Route path="/"       element={<LandingPage />} />
+        <Route path="/signin" element={<SigninPage />}  />
+        <Route path="/signup" element={<SingupPage />}  />
 
-
-            <Route
-  path="/add-location"
-  element={
-    <RequireAuth>
-      <AddLocationPage />
-    </RequireAuth>
-  }
-/>
-        {/* Protected */}
+        {/* Private / Protected */}
+        <Route
+          path="/home"
+          element={
+            <RequireAuth>
+              <HomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/add-location"
+          element={
+            <RequireAuth>
+              <AddLocationPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/profile"
           element={
@@ -56,7 +52,17 @@ export function App() {
           }
         />
 
-        {/* everything else → landing */}
+        {/* New: Edit a single location by ID */}
+        <Route
+          path="/edit-location/:id"
+          element={
+            <RequireAuth>
+              <EditLocationPage />
+            </RequireAuth>
+          }
+        />
+
+        {/* fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
