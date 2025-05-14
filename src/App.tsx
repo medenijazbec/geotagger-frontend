@@ -12,7 +12,7 @@ import LandingPage from './components/landingPage/landingPage';
 import SigninPage  from './components/singInPage/signInPage';
 import SingupPage  from './components/signUpPage/singUpPage';
 import HomePage from './components/homePage/homePage';
-import ProfilePage       from './components/ProfilePage';
+import ProfilePage       from './components/profilePage/profilePage';
 
 // auth guard
 import RequireAuth from './components/RequireAuth';
