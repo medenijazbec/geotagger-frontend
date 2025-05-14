@@ -33,6 +33,8 @@ const authHeader = (): HeadersInit => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+
+
 const HomePage: React.FC = () => {
   const nav = useNavigate();
 
@@ -41,7 +43,7 @@ const HomePage: React.FC = () => {
   const [bestGuesses,  setBestGuesses]  = useState<BestGuessDto[]>([]);
   const [newLocations, setNewLocations] = useState<LocationDto[]>([]);
   const [page,         setPage]         = useState(1);
-
+  const [profilePic, setProfilePic] = useState<string|null>(null);
   /* first load */
   useEffect(() => {
     (async () => {
@@ -70,6 +72,37 @@ const HomePage: React.FC = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+useEffect(() => {
+  (async () => {
+    try {
+      // — existing points fetch —
+      const p = await fetch(`${API_BASE}/api/Profile`, { headers: authHeader() });
+      if (p.ok) {
+        const { points } = await p.json();
+        setPoints(points ?? 0);
+      }
+
+      // ← new: fetch the full profile so we can grab the picture
+      const me = await fetch(`${API_BASE}/api/Profile/me`, { headers: authHeader() });
+      if (me.ok) {
+        const prof = await me.json() as { profilePictureUrl?: string };
+        setProfilePic(prof.profilePictureUrl ?? null);
+      }
+
+      /* — the rest of your existing logic (best guesses, loadLocations) — */
+      const g = await fetch(
+        `${API_BASE}/api/Guesses/personal-best?page=1&pageSize=3`,
+        { headers: authHeader() }
+      );
+      if (g.ok) setBestGuesses(await g.json());
+      loadLocations(1);
+
+    } catch {
+      /* ignore – placeholders will show */
+    }
+  })();
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   const loadLocations = async (p: number) => {
     try {
@@ -133,9 +166,16 @@ const HomePage: React.FC = () => {
             </button>
 
           <div className={styles.topbar__points}>
-            <div className={styles.points__avatar}>
-              <img src={avatarPlaceholder} alt="Avatar" className={styles.points__icon}/>
-            </div>
+<div className={styles.points__avatar}>
+  <img
+    src={ profilePic
+      ? `${API_BASE}${profilePic}`
+      : avatarPlaceholder }
+    alt="Avatar"
+    className={styles.points__icon}
+  />
+</div>
+
             <span className={styles.points__value}>{points}</span>
           </div>
 
