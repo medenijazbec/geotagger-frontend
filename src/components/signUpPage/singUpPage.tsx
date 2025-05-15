@@ -221,10 +221,11 @@ const SignupPage: React.FC = () => {
       <div className={styles['panel--right']}>
         <img src={mapImage} alt="" aria-hidden="true" className={styles.map} />
         <div className={styles.overlay}></div>
-        <div className={styles.rightLogoWrapper}>
-          <img src={logoGradientWhite} alt="Geotagger" className={styles.rightLogo} />
+        <div className={styles['right-logo-wrapper']}>
+          <img src={logoGradientWhite} alt="Geotagger" className={styles['right-logo']} />
         </div>
       </div>
+
     </div>
   );
 };
