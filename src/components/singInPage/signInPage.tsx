@@ -10,6 +10,7 @@ import mapImage           from '../../assets/signinMap.png';
 import logoGradientWhite  from '../../assets/logo_gradient_white.png';
 import googleIcon         from '../../assets/google-icon.png';
 import facebookIcon       from '../../assets/facebook-icon.png';
+import RotatingGlobe from '../RotatingGlobe';
 
 interface LoginResponse {
   token?: string;
@@ -166,22 +167,16 @@ const SigninPage: React.FC = () => {
       </div>
 
       {/* RIGHT PANEL: tinted map + white logo */}
-      <div className={`${styles.panel} ${styles['panel--right']}`}>
-        <img
-          src={mapImage}
-          alt=""
-          aria-hidden="true"
-          className={styles.map}
-        />
-        <div className={styles.overlay}></div>
-        <div className={styles['right-logo-wrapper']}>
-          <img
-            src={logoGradientWhite}
-            alt="Geotagger"
-            className={styles['right-logo']}
-          />
-        </div>
-      </div>
+<div className={styles['panel--right']}>
+  <div className={styles['rotating-globe-container']}>
+    <RotatingGlobe />
+  </div>
+   {/* <div className={styles.overlay}></div> */}
+  <div className={styles['right-logo-wrapper']}>
+    <img src={logoGradientWhite} alt="Geotagger" className={styles['right-logo']} />
+  </div>
+</div>
+
     </div>
   );
 };

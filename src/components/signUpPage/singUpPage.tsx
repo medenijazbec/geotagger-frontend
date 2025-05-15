@@ -9,6 +9,7 @@ import gradientLogo       from '../../assets/logo_gradient.png';
 import avatarPlaceholder  from '../../assets/profile_white.png';
 import mapImage           from '../../assets/signinMap.png';
 import logoGradientWhite  from '../../assets/logo_gradient_white.png';
+import RotatingGlobe from '../RotatingGlobe';
 
 /* ── helpers ── */
 const emailRx  = /^\S+@\S+\.\S+$/;
@@ -226,14 +227,16 @@ const SignupPage: React.FC = () => {
         </form>
       </div>
 
-      {/* RIGHT panel */}
-      <div className={styles['panel--right']}>
-        <img src={mapImage} alt="" aria-hidden="true" className={styles.map} />
-        <div className={styles.overlay}></div>
-        <div className={styles['right-logo-wrapper']}>
-          <img src={logoGradientWhite} alt="Geotagger" className={styles['right-logo']} />
-        </div>
-      </div>
+      {/* RIGHT PANEL: tinted map + white logo */}
+<div className={styles['panel--right']}>
+  <div className={styles['rotating-globe-container']}>
+    <RotatingGlobe />
+  </div>
+   {/* <div className={styles.overlay}></div> */}
+  <div className={styles['right-logo-wrapper']}>
+    <img src={logoGradientWhite} alt="Geotagger" className={styles['right-logo']} />
+  </div>
+</div>
 
     </div>
   );
