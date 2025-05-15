@@ -115,7 +115,7 @@ body {
 .field-group {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0rem;
 }
 .field.half {
   flex: 1;
@@ -221,4 +221,10 @@ input:focus {
   max-width: 640px;
   width: 50%;
   height: auto;
+}
+@media (max-width: 600px) {
+  .field-group {
+    flex-direction: column;
+    gap: 0;
+  }
 }

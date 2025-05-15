@@ -133,34 +133,43 @@ const SignupPage: React.FC = () => {
           </div>
 
           {/* Names */}
-          <div className={styles.fieldGroup}>
-            <div className={`${styles.field} ${styles.half}`}>
-              <label>First name</label>
-              <input
-                type="text"
-                placeholder="John"
-                value={firstName}
-                onChange={e => setFirstName(e.target.value)}
-                required
-              />
-              {!vFirst && firstName && (
-                <small style={{ color: 'red' }}>2 – 50 characters</small>
-              )}
-            </div>
-            <div className={`${styles.field} ${styles.half}`}>
-              <label>Last name</label>
-              <input
-                type="text"
-                placeholder="Doe"
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
-                required
-              />
-              {!vLast && lastName && (
-                <small style={{ color: 'red' }}>2 – 50 characters</small>
-              )}
-            </div>
-          </div>
+<div className={styles['field-group']}>
+  <div className={`${styles.field} ${styles.half}`}>
+    <label>First name</label>
+    <input
+      type="text"
+      placeholder="John"
+      value={firstName}
+      onChange={e => setFirstName(e.target.value)}
+      required
+      aria-invalid={!vFirst && !!firstName}
+    />
+    {!vFirst && firstName && (
+      <small style={{ color: 'red' }}>2 – 50 characters</small>
+    )}
+    {vFirst && firstName && (
+      <small style={{ color: 'green' }}>✓</small>
+    )}
+  </div>
+  <div className={`${styles.field} ${styles.half}`}>
+    <label>Last name</label>
+    <input
+      type="text"
+      placeholder="Doe"
+      value={lastName}
+      onChange={e => setLastName(e.target.value)}
+      required
+      aria-invalid={!vLast && !!lastName}
+    />
+    {!vLast && lastName && (
+      <small style={{ color: 'red' }}>2 – 50 characters</small>
+    )}
+    {vLast && lastName && (
+      <small style={{ color: 'green' }}>✓</small>
+    )}
+  </div>
+</div>
+
 
           {/* Password */}
           <div className={styles.field}>
