@@ -179,11 +179,12 @@ html, body {
 
 /* BANNER IMAGE */
 .edit-location__banner {
-  width:         70%;
-  border:        1px solid #ccc;
+  width: 70%;
+  max-height: 520px;          
+  border: 1px solid #ccc;
   border-radius: 6px;
-  overflow:      hidden;
-  margin:        0 auto 1rem;
+  overflow: hidden;
+  margin: 0 auto 1rem;
 }
 .edit-location__banner img {
   display: block;

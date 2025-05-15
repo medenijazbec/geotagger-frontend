@@ -86,7 +86,7 @@ const loadGuesses = async (pageNum: number) => {
         const data: UserGuessDto[] = await res.json();
         if (pageNum === 1) setGuesses(data);
         else setGuesses((prev) => [...prev, ...data]);
-        setHasMoreGuesses(data.length === 9);
+        setHasMoreGuesses(data.length === PAGE_SIZE);
       } else {
         setHasMoreGuesses(false);
       }
@@ -196,7 +196,8 @@ const loadGuesses = async (pageNum: number) => {
       <main className={styles.main}>
         {/* All user guesses */}
         <section className={styles.section}>
-          <h2 className={styles.section__title}>Your guesses</h2>
+          <h2 className={styles.section__title}>Personal best guesses</h2>
+
           <p  className={styles.section__subtitle}>
             Every guess you’ve made appears here, sorted by most recent. Try to beat your personal records or set a new one!
           </p>
@@ -214,27 +215,32 @@ const loadGuesses = async (pageNum: number) => {
             </div>
           )}
 
-          <div className={`${styles.cards} ${styles['cards--best']}`}>
-            {guessCards.map((g, i) => (
-              <div
-                key={g.locationId ?? i}
-                className={styles.card}
-                style={{ backgroundImage: `url(${g.imageUrl})` }}
-              >
-                <span className={styles.card__label}>{g.errorMeters} m</span>
-              </div>
-            ))}
-          </div>
-
-        {hasMoreGuesses && guessCards.length > 0 && (
-          <button
-            className={`${styles.btn} ${styles['btn--outline']} ${styles.section__btn}`}
-            onClick={handleLoadMoreGuesses}
-            disabled={guessesLoading}
+      {/* personal-best grid */}
+      <div className={`${styles.cards} ${styles['cards--best']}`}>
+        {guessCards.map((g, i) => (
+          <div
+            key={g.locationId ?? i}
+            className={styles.card}
+            style={{ backgroundImage: `url(${g.imageUrl})` }}
+            onClick={() => nav(`/guess-location/${g.locationId}`)}
           >
-            {guessesLoading ? 'Loading...' : 'Load more'}
-          </button>
-        )}
+            <span className={styles.card__label}>{g.errorMeters} m</span>
+          </div>
+        ))}
+      </div>
+
+          {guessCards.length > 0 && (
+            <button
+              className={`${styles.btn} ${styles['btn--outline']} ${styles.section__btn}`}
+              onClick={handleLoadMoreGuesses}
+              disabled={!hasMoreGuesses || guessesLoading}
+              style={{ marginTop: '1rem' }}
+            >
+              {guessesLoading ? 'Loading...' : (hasMoreGuesses ? 'Load more' : 'No more guesses')}
+            </button>
+          )}
+
+        
         </section>
 
         {/* New locations */}

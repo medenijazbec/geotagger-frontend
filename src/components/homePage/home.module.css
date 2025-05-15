@@ -131,34 +131,48 @@ html, body {
   inset: 0;
   background: rgba(101, 158, 137, 0.6);
   border-radius: 8px;
+  z-index: 1;
+  pointer-events: none;
 }
-
+.cards--best {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);   /* 3 per row */
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
 /* GRID OF NEW LOCATION CARDS */
 .cards--grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);   /* exactly 3 columns */
   gap: 1rem;
+  
 }
 
 /* CARD STYLES */
 .card {
-  background: url('../images/placeholder_places1.png') center/cover no-repeat;
-  border-radius: 8px;
   position: relative;
-  flex: 1;
+  overflow: hidden;                /* keep overlay inside rounded edges */
+  border-radius: 8px;
+  background: url('../images/placeholder_places1.png') center/cover no-repeat;
   height: 400px;
-  min-width: calc((100% - 2rem)/3);
+}
+.cards--best > .card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(101, 158, 137, 0.6);    /*  #659E89 @ 60 % opacity */
+  border-radius: inherit;
+  z-index: 1;
+  pointer-events: none;
 }
 .card__label {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  inset: 50% auto auto 50%;
   transform: translate(-50%, -50%);
-  font-weight: bold;
-  font-size: 1.5rem;
+  font: 700 1.5rem/1 var(--font-base);
   color: #fff;
+  z-index: 2;
 }
-
 /* LOAD MORE BUTTON */
 .section__btn {
   display: block;
