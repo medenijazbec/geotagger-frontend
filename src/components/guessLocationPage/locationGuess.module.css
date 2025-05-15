@@ -216,7 +216,7 @@ footer {
 /* banner + map frame */
 .banner {
   width: 100%;
-  max-height: 520px;          /* NEW */
+  max-height: 520px;       
   border-radius: 6px;
   overflow: hidden;
 }
@@ -231,9 +231,9 @@ footer {
   height: auto;
 }
 
-/* we use Leaflet, so set explicit height */
+
 .map-preview {
-  height: 400px;      /* change to 50vh if you prefer */
+  height: 400px;   
 }
 
 .leaflet-container {
