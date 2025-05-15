@@ -157,7 +157,7 @@
   border-radius: 8px;
   background-size: cover;
   background-position: center;
-  filter: grayscale(100%) brightness(70%);
+
 }
 /* ← Fixed: use your actual `placeholder_placesX.png` names below: */
 .card--1 {
@@ -196,4 +196,69 @@
 .footer a {
   color: #fff;
   text-decoration: underline;
+}
+/* Green lock overlay for locked demo cards */
+.demo__overlay__green {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(101, 158, 137, 0.55); /* #659E89, 55% opacity */
+  border-radius: 8px;
+  pointer-events: none;
+}
+.iconLock {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  background: url('../images/padlock.png') no-repeat center / contain;
+  opacity: 1;
+}
+
+
+.demo__card__loading {
+  animation: skeleton-shimmer 1.5s infinite linear;
+  background: linear-gradient(100deg, #e7ece9 40%, #f1f3f2 60%, #e7ece9 80%);
+  background-size: 200% 100%;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.demo__card {
+  position: relative;
+  flex: 1;
+  height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+  /* Remove background-image and filter from here */
+}
+
+.demo__cardBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+
+  z-index: 1;
+}
+
+.demo__overlay__green {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(101, 158, 137, 0.55); /* #659E89, 55% opacity */
+  border-radius: 8px;
+  pointer-events: none;
+}
+.iconLock {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  background: url('../images/padlock.png') no-repeat center / contain;
+  opacity: 1;
+  z-index: 3;
 }

@@ -1,28 +1,99 @@
 // src/components/landingPage/landingPage.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './landing.module.css';
 
 // ── assets ──────────────────────────────────────────────────────
-import logoGradient    from '../../assets/logo_gradient.png';
-import worldMapImg      from '../../assets/worldmap.png';
-import card1Img         from '../../assets/placeholder_places1.png';
-import card2Img         from '../../assets/placeholder_places2.png';
-import card3Img         from '../../assets/placeholder_places3.png';
-import padlockPng       from '../../assets/padlock.png';
+import logoGradient from '../../assets/logo_gradient.png';
+import worldMapImg from '../../assets/worldmap.png';
+import padlockPng from '../../assets/padlock.png';
 
-/* helper for locked demo cards */
-const cardBg = [card1Img, card2Img, card3Img];
+interface Location {
+  locationId: number;
+  title: string;
+  description?: string;
+  latitude: number;
+  longitude: number;
+  imageUrl: string;
+}
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const goSignin = () => navigate('/signin');
 
+  // Fetch 3 demo locations
+  const [locations, setLocations] = useState<Location[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    fetch('/api/Locations?page=1&pageSize=3')
+      .then((res) => res.ok ? res.json() : Promise.reject())
+      .then((data: Location[]) => {
+        setLocations(data.slice(0, 3)); // Ensure only 3
+        setLoading(false);
+      })
+      .catch(() => {
+        setLocations([]);
+        setLoading(false);
+      });
+  }, []);
+
+  //skeleton/fallback for cards while loading
+  const demoCards = loading
+    ? Array.from({ length: 3 }).map((_, i) => (
+        <div
+          key={i}
+          className={`${styles.demo__card} ${styles[`card--${i + 1}`]} ${styles.demo__card__loading}`}
+          style={{ background: '#e7ece9' }}
+        >
+          <div className={styles.demo__overlay}>
+            <span className={styles.iconLock} style={{ opacity: 0.3 }} />
+          </div>
+        </div>
+      ))
+    : (locations && locations.length > 0
+        ? locations.map((loc, i) => (
+<div
+  key={loc.locationId}
+  className={styles.demo__card}
+  onClick={goSignin}
+  title={loc.title}
+>
+  <div
+    className={styles.demo__card}
+    style={{ backgroundImage: `url(${loc.imageUrl})` }}
+  />
+  <div className={styles.demo__overlay__green}>
+    <span
+      className={styles.iconLock}
+      style={{ backgroundImage: `url(${padlockPng})` }}
+    ></span>
+  </div>
+</div>
+
+          ))
+        : // fallback to static placeholders if API fails
+          Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className={`${styles.demo__card} ${styles[`card--${i + 1}`]}`}
+              onClick={goSignin}
+            >
+              <div className={styles.demo__overlay__green}>
+                <span
+                  className={styles.iconLock}
+                  style={{ backgroundImage: `url(${padlockPng})` }}
+                ></span>
+              </div>
+            </div>
+          ))
+      );
+
   return (
-    <div className={styles.container /* body */}>
-      {/* ───────────────── HEADER ───────────────── */}
+    <div className={styles.container}>
+      {/* ───────────── HEADER ───────────── */}
       <header className={styles.header}>
-        <div className={styles.logo}>          
+        <div className={styles.logo}>
           <img src={logoGradient} alt="Geotagger icon" className={styles.logo__icon} />
           <span className={styles.logo__text}>Geotagger</span>
         </div>
@@ -36,7 +107,7 @@ const LandingPage: React.FC = () => {
         </nav>
       </header>
 
-      {/* ───────────────── MAIN ───────────────── */}
+      {/* ───────────── MAIN ───────────── */}
       <main className={styles.main}>
         {/* HERO */}
         <section className={styles.hero}>
@@ -54,7 +125,7 @@ const LandingPage: React.FC = () => {
             </Link>
           </div>
 
-          <div className={styles.hero__imageWrapper /* wrapper class uses camel‑case due to module */}>
+          <div className={styles.hero__imageWrapper}>
             <img src={worldMapImg} alt="decorative world map" aria-hidden="true" className={styles.hero__image} />
           </div>
         </section>
@@ -67,21 +138,7 @@ const LandingPage: React.FC = () => {
           </p>
 
           <div className={styles.demo__cards}>
-            {cardBg.map((src, i) => (
-              <div
-                key={i}
-                className={`${styles.demo__card} ${styles[`card--${i + 1}`]}`}
-                style={{ backgroundImage: `url(${src})` }}
-                onClick={goSignin}
-              >
-                <div className={styles.demo__overlay}>
-                  <span
-                    className={styles.iconLock}
-                    style={{ backgroundImage: `url(${padlockPng})` }}
-                  ></span>
-                </div>
-              </div>
-            ))}
+            {demoCards}
           </div>
 
           <Link to="/signup" className={`${styles.btn} ${styles['btn--primary']}`}>
@@ -90,7 +147,7 @@ const LandingPage: React.FC = () => {
         </section>
       </main>
 
-      {/* ───────────────── FOOTER ───────────────── */}
+      {/* ───────────── FOOTER ───────────── */}
       <footer className={styles.footer}>
         <div className={styles.footer__left}>© 2025 Geotagger</div>
         <div className={styles.footer__right}>
