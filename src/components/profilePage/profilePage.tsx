@@ -23,9 +23,10 @@ interface ProfileDto {
   points   : number;
   profilePictureUrl?: string;
 }
-interface BestGuessDto {
-  distanceMeters: number;
-  imageUrl: string;
+interface PersonalBestDto {
+  locationId : number;
+  errorMeters: number;
+  imageUrl   : string;
 }
 interface UploadDto {
   locationId: number;
@@ -44,26 +45,37 @@ const Modal: React.FC<{
     </div>
   );
 
+const PAGE_SIZE = 4;
+
 const ProfilePage: React.FC = () => {
   const nav   = useNavigate();
   const token = localStorage.getItem('token') || '';
   if (!token) { nav('/signin'); return null; }
   const auth = { headers: { Authorization: `Bearer ${token}` } };
 
-const PAGE_SIZE = 4;
-
-  /* ─ state ─ */
+  // ─── PROFILE/POINTS ───────────────────────────────────────────────────
   const [profile , setProfile ] = useState<ProfileDto | null>(null);
-  const [best    , setBest    ] = useState<BestGuessDto[]>([]);
-  const [bestPage, setBestPage] = useState(1);
-  const [bestHasMore, setBestHasMore] = useState(true);
+  const [points, setPoints] = useState<number>(0);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+
+  // ─── PERSONAL BEST GUESSES ────────────────────────────────────────────
+  const [bestGuesses , setBestGuesses ] = useState<PersonalBestDto[]>([]);
+  const [bestGuessesPage, setBestGuessesPage] = useState(1);
+  const [hasMoreBestGuesses, setHasMoreBestGuesses] = useState(true);
+  const [bestGuessesLoading, setBestGuessesLoading] = useState(false);
+  const [bestGuessesLoadedOnce, setBestGuessesLoadedOnce] = useState(false);
+
+  // ─── UPLOADS ──────────────────────────────────────────────────────────
   const [uploads , setUploads ] = useState<UploadDto[]>([]);
+  const [uploadsPage, setUploadsPage] = useState(1);
+  const [uploadsHasMore, setUploadsHasMore] = useState(true);
+
+  // ─── MODALS, FORMS, UI ────────────────────────────────────────────────
   const [deleteId, setDeleteId] = useState<number| null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showDeleted, setShowDeleted] = useState(false);
   const [flash   , setFlash   ] = useState<string | null>(null);
-  const [uploadsPage, setUploadsPage] = useState(1);
-  const [uploadsHasMore, setUploadsHasMore] = useState(true);
+
   /* hover menu */
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -87,69 +99,96 @@ const PAGE_SIZE = 4;
   const cropWrapRef = useRef<HTMLDivElement>(null);
   const CROP = 180;
 
-  /* ─────────────────────────────────────────────────────────── */
-
-
-  
-useEffect(() => {
-  (async () => {
+  // ─── FETCH PROFILE (for points, pfp, info) ────────────────────────────
+  const fetchProfile = async () => {
     try {
-      // Load profile info
-      const p = await fetch(`${API_BASE}/api/Profile/me`, auth)
-      if (p.ok) {
-        const info: ProfileDto = await p.json()
-        setProfile(info)
-        setFirst(info.firstName)
-        setLast(info.lastName)
-        setMail(info.email)
+      // Fetch profile main info (name, mail, pfp)
+      const me = await fetch(`${API_BASE}/api/Profile/me`, auth).then(r => r.ok ? r.json() : null);
+      if (me) {
+        setProfile(me);
+        setFirst(me.firstName);
+        setLast(me.lastName);
+        setMail(me.email);
+        setProfilePic(me.profilePictureUrl ?? null);
       }
-
-      // oad first page of best guesses
-      {
-        const res = await fetch(
-          `${API_BASE}/api/Guesses/personal-best?page=1&pageSize=${PAGE_SIZE}`,
-          auth
-        )
-        if (res.ok) {
-          const arr: BestGuessDto[] = await res.json()
-          setBest(arr)
-          // if fewer than a full page, -> know there's no more
-          if (arr.length < PAGE_SIZE) {
-            setBestHasMore(false)
-          }
-        }
-      }
-
-      //  Load first page of uploads
-      {
-        const res = await fetch(
-          `${API_BASE}/api/Profile/locations?page=1&pageSize=${PAGE_SIZE}`,
-          auth
-        )
-        if (res.ok) {
-          const arr: UploadDto[] = await res.json()
-          setUploads(arr)
-          // same “hasMore” logic
-          if (arr.length < PAGE_SIZE) {
-            setUploadsHasMore(false)
-          }
-        }
-      }
-
-    } catch (err) {
-      console.error(err)
-      setFlash('Network error. Try again.')
+      // Fetch wallet/points
+      const wallet = await fetch(`${API_BASE}/api/Profile/wallet`, auth).then(r => r.ok ? r.json() : null);
+      if (wallet && typeof wallet.points === 'number') setPoints(wallet.points);
+    } catch {
+      setFlash('Network error. Try again.');
     }
-  })()
-  // only run once on mount
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [])
+  };
 
+  // ─── FETCH PERSONAL BEST GUESSES ──────────────────────────────────────
+  const fetchPersonalBestGuesses = async (pageNum: number) => {
+    setBestGuessesLoading(true);
+    try {
+      // Notice API endpoint spelling/pagination must match backend
+      const res = await fetch(
+        `${API_BASE}/api/guess/personal-best?page=${pageNum}&pageSize=${PAGE_SIZE}`,
+        auth
+      );
+      if (res.ok) {
+        const data: PersonalBestDto[] = await res.json();
+        if (pageNum === 1) setBestGuesses(data);
+        else setBestGuesses(prev => [...prev, ...data]);
+        setHasMoreBestGuesses(data.length === PAGE_SIZE);
+      } else {
+        setHasMoreBestGuesses(false);
+      }
+    } catch {
+      setHasMoreBestGuesses(false);
+    }
+    setBestGuessesLoading(false);
+    setBestGuessesLoadedOnce(true);
+    // Always refresh profile after loading bests (to update points/pfp/etc)
+    fetchProfile();
+  };
+
+  // ─── UPLOADS FETCH ────────────────────────────────────────────────────
+  const loadUploads = async (pageNum: number) => {
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/Profile/locations?page=${pageNum}&pageSize=${PAGE_SIZE}`,
+        auth
+      );
+      if (res.ok) {
+        const arr: UploadDto[] = await res.json();
+        if (pageNum === 1) setUploads(arr);
+        else setUploads(u => [...u, ...arr]);
+        setUploadsHasMore(arr.length === PAGE_SIZE);
+      }
+    } catch {
+      setUploadsHasMore(false);
+    }
+  };
+
+  // ─── ON MOUNT: Load all relevant info ────────────────────────────────
+  useEffect(() => {
+    fetchProfile();
+    fetchPersonalBestGuesses(1);
+    loadUploads(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ─ helpers ─ */
   const fullName = profile ? `${profile.firstName} ${profile.lastName}` : '';
 
- const handleDeleteClick = (locId: number) => {
+  // ─── PAGINATION HANDLERS ──────────────────────────────────────────────
+  const handleLoadMoreBestGuesses = () => {
+    const next = bestGuessesPage + 1;
+    setBestGuessesPage(next);
+    fetchPersonalBestGuesses(next);
+  };
+
+  const handleLoadMoreUploads = () => {
+    const next = uploadsPage + 1;
+    setUploadsPage(next);
+    loadUploads(next);
+  };
+
+  // ─── DELETE LOGIC ─────────────────────────────────────────────────────
+  const handleDeleteClick = (locId: number) => {
     setDeleteId(locId);
     setShowConfirm(true);
   };
@@ -159,56 +198,25 @@ useEffect(() => {
   };
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
-    const token = localStorage.getItem('token') || '';
     const res = await fetch(
       `${API_BASE}/api/locations/${deleteId}`,
       { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }
     );
     if (res.ok) {
-      // remove from UI immediately
       setUploads(u => u.filter(x => x.locationId !== deleteId));
       setShowConfirm(false);
       setShowDeleted(true);
+      // refresh points after deletion (optional)
+      fetchProfile();
     } else {
-      console.error(await res.text());
+      setFlash('Delete failed.');
     }
   };
   const handleDismissDeleted = () => {
     setShowDeleted(false);
   };
 
-    const loadMoreBest = async () => {
-    const next = bestPage + 1;
-    const res = await fetch(
-      `${API_BASE}/api/Guesses/personal-best?page=${next}&pageSize=${PAGE_SIZE}`,
-      auth
-    );
-    if (!res.ok) {
-      console.error('Failed to load more best guesses');
-      return;
-    }
-    const arr: BestGuessDto[] = await res.json();
-    setBest(b => [...b, ...arr]);
-    setBestPage(next);
-    if (arr.length < PAGE_SIZE) setBestHasMore(false);
-  };
-
-  const loadMoreUploads = async () => {
-    const next = uploadsPage + 1;
-    const res = await fetch(
-      `${API_BASE}/api/Profile/locations?page=${next}&pageSize=${PAGE_SIZE}`,
-      auth
-    );
-    if (!res.ok) {
-      console.error('Failed to load more uploads');
-      return;
-    }
-    const arr: UploadDto[] = await res.json();
-    setUploads(u => [...u, ...arr]);
-    setUploadsPage(next);
-    if (arr.length < PAGE_SIZE) setUploadsHasMore(false);
-  };
-
+  // ─── PROFILE INFO SAVE ────────────────────────────────────────────────
   const saveProfile = async () => {
     try {
       const r = await fetch(`${API_BASE}/api/Profile/me`, {
@@ -220,9 +228,11 @@ useEffect(() => {
       setEditOpen(false);
       setProfile(p => p ? { ...p, firstName: first, lastName: last, email: mail } : p);
       setFlash('Information saved.');
+      fetchProfile();
     } catch { setFlash('Save failed.'); }
   };
 
+  // ─── PASSWORD CHANGE ─────────────────────────────────────────────────
   const changePw = async (e: FormEvent) => {
     e.preventDefault();
     const d = new FormData(e.currentTarget as HTMLFormElement);
@@ -242,7 +252,7 @@ useEffect(() => {
     } catch { setFlash('Password change failed.'); }
   };
 
-  /* cropper helpers */
+  // ─── CROPPER LOGIC ───────────────────────────────────────────────────
   const pickFile = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -279,6 +289,7 @@ useEffect(() => {
       });
       setProfile(p => p ? { ...p, profilePictureUrl: url } : p);
       setPicOpen(false); setFile(null); setPreview(null);
+      fetchProfile();
     } catch { setFlash('Upload failed.'); }
   };
 
@@ -299,28 +310,24 @@ useEffect(() => {
 
         <nav className={styles.topbar__nav}>
           <Link to="/home" className={styles.topbar__link}>Home</Link>
-
           <button
             onClick={() => setMenuOpen(true)}
             className={styles.topbar__link}
           >
             {fullName || 'Profile settings'}
           </button>
-
           <button onClick={logout} className={styles.topbar__link}>Logout</button>
-
           <div className={styles.topbar__points}>
             <div className={styles.points__avatar}>
               <img
-                src={profile?.profilePictureUrl
-                  ? `${API_BASE}${profile.profilePictureUrl}`
+                src={profilePic
+                  ? `${API_BASE}${profilePic}`
                   : avatarPlaceholder}
                 alt="avatar"
               />
             </div>
-            <span className={styles.points__value}>{profile?.points ?? 0}</span>
+            <span className={styles.points__value}>{typeof points === 'number' ? points : (profile?.points ?? 0)}</span>
           </div>
-
           <button
             className={styles['btn--icon']}
             onClick={() => nav('/add-location')}
@@ -361,8 +368,8 @@ useEffect(() => {
       <div className={styles['profile-header']}>
         <div className={styles['profile-avatar']}>
           <img
-            src={profile?.profilePictureUrl
-              ? `${API_BASE}${profile.profilePictureUrl}`
+            src={profilePic
+              ? `${API_BASE}${profilePic}`
               : avatarPlaceholder}
             alt={fullName}
           />
@@ -376,12 +383,16 @@ useEffect(() => {
         {/* BEST GUESSES */}
         <section className={styles.section}>
           <h2 className={styles.section__title}>My best guesses</h2>
-
-          {best.length === 0 ? (
+          {bestGuessesLoading && !bestGuessesLoadedOnce && (
+            <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+              Loading your best guesses...
+            </div>
+          )}
+          {!bestGuessesLoading && bestGuesses.length === 0 && (
             <div className={styles.emptyState}>
               <p className={styles.emptyTitle}>No best guesses yet!</p>
               <p className={styles.emptySubtitle}>
-                Start new game and guess the location of a picture to see results here.
+                Start a new game and guess the location of a picture to see results here.
               </p>
               <button
                 className={`${styles.btn} ${styles['btn--outline']}`}
@@ -390,35 +401,40 @@ useEffect(() => {
                 Go to locations
               </button>
             </div>
-          ) : (
-            <>
-              <div className={`${styles.cards} ${styles['cards--best']}`}>
-                {best.map((g, i) => (
-                  <div
-                    key={i}
-                    className={styles.card}
-                    style={{ backgroundImage: `url(${API_BASE}${g.imageUrl})` }}
-                  >
-                    <span className={styles.card__label}>{g.distanceMeters} m</span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
-                onClick={loadMoreBest}
-                disabled={!bestHasMore}
+          )}
+          <div className={`${styles.cards} ${styles['cards--best']}`}>
+            {bestGuesses.map((g) => (
+              <div
+                key={g.locationId}
+                className={styles.card}
+                style={{ backgroundImage: `url(${API_BASE}${g.imageUrl})` }}
               >
-                {bestHasMore ? 'Load more' : 'No more'}
-              </button>
-            </>
+                <span className={styles.card__label}>{g.errorMeters} m</span>
+              </div>
+            ))}
+          </div>
+          {hasMoreBestGuesses && bestGuesses.length > 0 && (
+            <button
+              className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
+              onClick={handleLoadMoreBestGuesses}
+              disabled={bestGuessesLoading}
+            >
+              {bestGuessesLoading ? 'Loading...' : 'Load more'}
+            </button>
+          )}
+          {!hasMoreBestGuesses && bestGuesses.length > 0 && (
+            <button
+              className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
+              disabled
+            >
+              No more
+            </button>
           )}
         </section>
 
         {/* MY UPLOADS */}
         <section className={styles.section}>
           <h2 className={styles.section__title}>My uploads</h2>
-
           {uploads.length === 0 ? (
             <div className={styles.emptyState}>
               <p className={styles.emptyTitle}>No uploads yet!</p>
@@ -442,76 +458,84 @@ useEffect(() => {
                     className={`${styles.card} ${styles['upload-card']}`}
                     style={{ backgroundImage: `url(${API_BASE}${u.imageUrl})` }}
                   >
-               <button
-                 className={styles['edit-btn']}
-                 onClick={() => nav(`/edit-location/${u.locationId}`)}
-               >
-                 <img src={pencilIcon} alt="Edit"/>
-               </button>
-                <button
-                  className={styles['delete-btn']}
-                  onClick={() => handleDeleteClick(u.locationId)}
-                >
-                  <img src={xIcon} alt="Delete"/>
-                </button>
+                    <button
+                      className={styles['edit-btn']}
+                      onClick={() => nav(`/edit-location/${u.locationId}`)}
+                    >
+                      <img src={pencilIcon} alt="Edit"/>
+                    </button>
+                    <button
+                      className={styles['delete-btn']}
+                      onClick={() => handleDeleteClick(u.locationId)}
+                    >
+                      <img src={xIcon} alt="Delete"/>
+                    </button>
                   </div>
                 ))}
               </div>
-
-              <button
-                className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
-                onClick={loadMoreUploads}
-                disabled={!uploadsHasMore}
-               >
-                
-                {uploadsHasMore ? 'Load more' : 'Looks like you have reached the end.'}
-              </button>
+              {uploadsHasMore && (
+                <button
+                  className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
+                  onClick={handleLoadMoreUploads}
+                  disabled={!uploadsHasMore}
+                >
+                  Load more
+                </button>
+              )}
+              {!uploadsHasMore && uploads.length > 0 && (
+                <button
+                  className={`${styles.btn} ${styles['btn--outline']} ${styles['section__btn']}`}
+                  disabled
+                >
+                  Looks like you have reached the end.
+                </button>
+              )}
             </>
           )}
         </section>
 
-{/* ─── CONFIRMATION MODAL ────────────────────────────────────── */}
-      {showConfirm && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h2 className={styles.modalTitle}>Are you sure?</h2>
-            <p className={styles.modalText}>
-              This location will be deleted. There is no undo of this action.
-            </p>
-            <div className={styles.modalActions}>
-              <button
-                className={styles.btnLink}
-                onClick={handleCancelDelete}
-              >
-                Cancel
-              </button>
-              <button
-                className={styles.btnSubmit}
-                onClick={handleConfirmDelete}
-              >
-                Submit
-              </button>
+        {/* ─── CONFIRMATION MODAL ─────────────────────────────── */}
+        {showConfirm && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+              <h2 className={styles.modalTitle}>Are you sure?</h2>
+              <p className={styles.modalText}>
+                This location will be deleted. There is no undo of this action.
+              </p>
+              <div className={styles.modalActions}>
+                <button
+                  className={styles.btnLink}
+                  onClick={handleCancelDelete}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={styles.btnSubmit}
+                  onClick={handleConfirmDelete}
+                >
+                  Submit
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ─── DELETED FEEDBACK MODAL ───────────────────────────────── */}
-      {showDeleted && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <p className={styles.modalText}>Your location was deleted.</p>
-            <div className={styles.modalActions}>
-              <button
-                className={styles.btnSubmit}
-                onClick={handleDismissDeleted}
-              >
-                Dismiss
-              </button>
+        {/* ─── DELETED FEEDBACK MODAL ─────────────────────────── */}
+        {showDeleted && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+              <p className={styles.modalText}>Your location was deleted.</p>
+              <div className={styles.modalActions}>
+                <button
+                  className={styles.btnSubmit}
+                  onClick={handleDismissDeleted}
+                >
+                  Dismiss
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       </main>
 
@@ -530,7 +554,6 @@ useEffect(() => {
       <Modal open={editOpen} onClose={() => setEditOpen(false)}>
         <h2 data-highlight="settings.">Profile </h2>
         <p>Change your information.</p>
-
         <form
           className={styles.editForm}
           onSubmit={e => { e.preventDefault(); saveProfile(); }}
@@ -544,7 +567,6 @@ useEffect(() => {
               required
             />
           </div>
-
           <div className={styles.row}>
             <div className={styles.field}>
               <label>First name</label>
@@ -567,7 +589,6 @@ useEffect(() => {
               />
             </div>
           </div>
-
           <div className={styles.links}>
             <button
               type="button"
@@ -584,7 +605,6 @@ useEffect(() => {
               Change profile picture
             </button>
           </div>
-
           <div className={styles.actionRow}>
             <button
               type="button"
@@ -602,7 +622,6 @@ useEffect(() => {
       <Modal open={pwOpen} onClose={() => setPwOpen(false)}>
         <h2 data-highlight="settings.">Profile </h2>
         <p>Change your password.</p>
-
         <form className={styles.editForm} onSubmit={changePw}>
           <div className={styles.field}>
             <label>Current password</label>
@@ -616,7 +635,6 @@ useEffect(() => {
             <label>Repeat new password</label>
             <input name="confirm" type="password" required/>
           </div>
-
           <div className={styles.actionRow}>
             <button
               type="button"
@@ -634,7 +652,6 @@ useEffect(() => {
       <Modal open={picOpen} onClose={() => setPicOpen(false)}>
         <h2 data-highlight="settings.">Profile </h2>
         <p>Change your profile photo.</p>
-
         {/* cropper or preview */}
         {showCropper && preview ? (
           <div
@@ -659,16 +676,16 @@ useEffect(() => {
           <div className={styles.pfpAvatar}>
             <img
               src={
-                preview ??
-                (profile?.profilePictureUrl
-                  ? `${API_BASE}${profile.profilePictureUrl}`
-                  : avatarPlaceholder)
+                preview ?? (
+                  profilePic
+                    ? `${API_BASE}${profilePic}`
+                    : avatarPlaceholder
+                )
               }
               alt="preview"
             />
           </div>
         )}
-
         {/* upload-file control */}
         <input
           id="fileInput"
@@ -680,7 +697,6 @@ useEffect(() => {
         <label htmlFor="fileInput" className={styles.uploadBtn}>
           {showCropper ? 'Choose another file' : 'Upload new picture'}
         </label>
-
         {/* action row */}
         <div className={styles.pfpActions}>
           <button
@@ -690,7 +706,6 @@ useEffect(() => {
           >
             Cancel
           </button>
-
           {showCropper ? (
             <button
               onClick={handleCrop}

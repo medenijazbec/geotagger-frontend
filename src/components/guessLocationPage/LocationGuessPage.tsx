@@ -89,32 +89,40 @@ const LocationGuessPage: React.FC = () => {
   const [guessLon, setGuessLon] = useState<number | null>(null);
   const [errorMeters, setError] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
-
-  // ← NEW: this causes the leaderboard to re-fetch
+const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  //this causes the leaderboard to re-fetch
   const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => {
-    fetch(`${API_BASE}/api/Locations/${id}`)
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(setLoc)
-      .catch(() => nav('/home'));
+useEffect(() => {
+  fetch(`${API_BASE}/api/Locations/${id}`)
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(setLoc)
+    .catch(() => nav('/home'));
 
-    (async () => {
-      try {
-        const me = await fetch(
-          `${API_BASE}/api/Profile/me`,
-          { headers: authHeader() }
-        ).then(r => r.ok ? r.json() : null);
-        if (me) setProfilePic(me.profilePictureUrl ?? null);
+  (async () => {
+    try {
+      //Fetch current user profile
+      const me = await fetch(
+        `${API_BASE}/api/Profile/me`,
+        { headers: authHeader() }
+      ).then(r => r.ok ? r.json() : null);
+      if (me) {
+        setProfilePic(me.profilePictureUrl ?? null);
+        // setCurrentUserId(me.id); 
+      }
 
-        const w = await fetch(
-          `${API_BASE}/api/Profile/wallet`,
-          { headers: authHeader() }
-        ).then(r => r.ok ? r.json() : null);
-        if (w) setPoints(w.points ?? 0);
-      } catch { /* ignore */ }
-    })();
-  }, [id, nav]);
+      // Fetch current user wallet/points
+      const w = await fetch(
+        `${API_BASE}/api/Profile/wallet`,
+        { headers: authHeader() }
+      ).then(r => r.ok ? r.json() : null);
+      if (w) setPoints(w.points ?? 0);
+    } catch {
+      // Ignore errors
+    }
+  })();
+}, [id, nav]);
+
 
   useEffect(() => {
     if (loc && guessLat !== null && guessLon !== null) {
@@ -144,10 +152,10 @@ const LocationGuessPage: React.FC = () => {
       setError(Math.round(data.errorMeters));
       setPoints(data.remainingPoints);
 
-      // ← force leaderboard reload
+      //force leaderboard reload
       setRefreshKey(k => k + 1);
     } catch {
-      /* optional toast… */
+      
     } finally {
       setBusy(false);
     }
@@ -266,13 +274,16 @@ const LocationGuessPage: React.FC = () => {
         </section>
 
         <aside className={styles['guess-page__right']}>
+          <h2 className={styles['leaderboard__heading']}>Leaderboard</h2>
           {loc && (
             <Leaderboard
               locationId={loc.locationId}
               refreshKey={refreshKey}
+              currentUserId={currentUserId ?? ""}
             />
           )}
         </aside>
+
       </div>
 
       <footer className={styles.footer}>

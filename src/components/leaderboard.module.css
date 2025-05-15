@@ -62,3 +62,31 @@
   color: var(--color-primary);
   font-weight: 700;
 }
+.rank--gold {
+  background: linear-gradient(90deg, #ffd700 0%, #fffac1 100%);
+  color: #fff;
+}
+
+.rank--silver {
+  background: linear-gradient(90deg, #bfc9ca 0%, #f2f6f7 100%);
+  color: #233d4d;
+}
+
+.rank--bronze {
+  background: linear-gradient(90deg, #cd7f32 0%, #ffe0b2 100%);
+  color: #fff;
+}
+
+.rank--dark {
+  background: #233d4d;
+  color: #fff;
+}
+
+
+.leaderboard__itemMe {
+  background: linear-gradient(90deg, #b9e5ad 0%, #74d49a 90%);
+  color: #233d4d !important;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 1px 4px 0 rgba(80,160,100,0.09);
+}
