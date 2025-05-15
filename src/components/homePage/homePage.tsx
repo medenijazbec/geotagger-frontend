@@ -18,10 +18,12 @@ import placeholder3      from '../../assets/placeholder_places3.png';
 const PLACEHOLDERS = [placeholder1, placeholder2, placeholder3];
 
 /* ── API DTOs ───────────────────────────────────────────── */
-interface BestGuessDto {
-  distanceMeters: number;
-  imageUrl?: string;
+interface UserGuessDto {
+  locationId: number;
+  imageUrl: string;
+  errorMeters: number;
 }
+
 interface LocationDto {
   locationId: number;
   imageUrl: string;
@@ -33,77 +35,72 @@ const authHeader = (): HeadersInit => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-
-
 const HomePage: React.FC = () => {
   const nav = useNavigate();
+  const PAGE_SIZE = 3;
+  // Points/profile state
+  const [points, setPoints] = useState<number>(0);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
 
-  /* state */
-  const [points,       setPoints]       = useState<number>(0);
-  const [bestGuesses,  setBestGuesses]  = useState<BestGuessDto[]>([]);
+  // User guesses (paginated)
+  const [guesses, setGuesses] = useState<UserGuessDto[]>([]);
+  const [guessesPage, setGuessesPage] = useState(1);
+  const [hasMoreGuesses, setHasMoreGuesses] = useState(true);
+  const [guessesLoading, setGuessesLoading] = useState(false);
+  const [guessesLoadedOnce, setGuessesLoadedOnce] = useState(false);
+
+  // New locations (unchanged)
   const [newLocations, setNewLocations] = useState<LocationDto[]>([]);
-  const [page,         setPage]         = useState(1);
-  const [profilePic, setProfilePic] = useState<string|null>(null);
-  /* first load */
-  useEffect(() => {
-    (async () => {
-      try {
-        /* profile / points */
-        const p = await fetch(`${API_BASE}/api/Profile`, {
-          headers: authHeader(),
-        });
-        if (p.ok) {
-          const { points } = await p.json();
-          setPoints(points ?? 0);
-        }
+  const [page, setPage] = useState(1);
 
-        /* best three guesses */
-        const g = await fetch(
-          `${API_BASE}/api/Guesses/personal-best?page=1&pageSize=3`,
-          { headers: authHeader() }
-        );
-        if (g.ok) setBestGuesses(await g.json());
-
-        /* first batch of locations */
-        loadLocations(1);
-      } catch {
-        /* ignore – placeholders will show */
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-useEffect(() => {
-  (async () => {
+  // --- Fetch profile points and profile pic exactly as LocationGuessPage does ---
+  const fetchProfile = async () => {
     try {
-      // — existing points fetch —
-      const p = await fetch(`${API_BASE}/api/Profile`, { headers: authHeader() });
-      if (p.ok) {
-        const { points } = await p.json();
-        setPoints(points ?? 0);
-      }
-
-      // ← new: fetch the full profile so we can grab the picture
-      const me = await fetch(`${API_BASE}/api/Profile/me`, { headers: authHeader() });
-      if (me.ok) {
-        const prof = await me.json() as { profilePictureUrl?: string };
-        setProfilePic(prof.profilePictureUrl ?? null);
-      }
-
-      /* — the rest of your existing logic (best guesses, loadLocations) — */
-      const g = await fetch(
-        `${API_BASE}/api/Guesses/personal-best?page=1&pageSize=3`,
+      // Fetch profile picture (from /api/Profile/me)
+      const me = await fetch(
+        `${API_BASE}/api/Profile/me`,
         { headers: authHeader() }
-      );
-      if (g.ok) setBestGuesses(await g.json());
-      loadLocations(1);
+      ).then(r => r.ok ? r.json() : null);
+      if (me) setProfilePic(me.profilePictureUrl ?? null);
 
+      // Fetch points (from /api/Profile/wallet)
+      const w = await fetch(
+        `${API_BASE}/api/Profile/wallet`,
+        { headers: authHeader() }
+      ).then(r => r.ok ? r.json() : null);
+      if (w) setPoints(w.points ?? 0);
     } catch {
-      /* ignore – placeholders will show */
+      // Ignore
     }
-  })();
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+  };
 
+  // --- Fetch user's ALL guesses, paginated ---
+const loadGuesses = async (pageNum: number) => {
+  setGuessesLoading(true);
+  try {
+    const res = await fetch(
+      `${API_BASE}/api/guess/personal-best?page=${pageNum}&pageSize=${PAGE_SIZE}`,
+      { headers: authHeader() }
+    );
+      if (res.ok) {
+        const data: UserGuessDto[] = await res.json();
+        if (pageNum === 1) setGuesses(data);
+        else setGuesses((prev) => [...prev, ...data]);
+        setHasMoreGuesses(data.length === 9);
+      } else {
+        setHasMoreGuesses(false);
+      }
+    } catch {
+      setHasMoreGuesses(false);
+    }
+    setGuessesLoading(false);
+    setGuessesLoadedOnce(true);
+
+    // Always fetch latest points (in case they changed)
+    fetchProfile();
+  };
+
+  // --- Fetch new locations (unchanged) ---
   const loadLocations = async (p: number) => {
     try {
       const r = await fetch(
@@ -117,27 +114,38 @@ useEffect(() => {
     } catch {/* ignore */}
   };
 
-  /* ui handlers */
+  // --- First load ---
+  useEffect(() => {
+    fetchProfile();
+    loadGuesses(1);
+    loadLocations(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // --- UI handlers ---
   const handleLoadMoreLocations = () => {
     const next = page + 1;
     setPage(next);
     loadLocations(next);
   };
+
+  const handleLoadMoreGuesses = () => {
+    const next = guessesPage + 1;
+    setGuessesPage(next);
+    loadGuesses(next);
+  };
+
   const handleLogout       = () => { localStorage.removeItem('token'); nav('/signin'); };
   const handleAddLocation  = () => nav('/add-location');
 
-  /* render helpers */
-  const bestCards = bestGuesses.length
-    ? bestGuesses
-    : [256, 544, 755].map((d, i) => ({
-        distanceMeters: d,
-        imageUrl: PLACEHOLDERS[i % 3],
-      }));
+  // --- Render helpers ---
+  const guessCards = guesses.length
+    ? guesses
+    : [];
 
   const locationCards = newLocations.length
     ? newLocations
     : Array.from({ length: 9 }, (_, i) => ({
-        /* negative id so it never matches a real one */
         locationId: -i - 1,
         imageUrl: PLACEHOLDERS[i % 3],
       }));
@@ -150,32 +158,31 @@ useEffect(() => {
         <div className={styles.topbar__left}>
           <img src={gradientLogo} alt="Geotagger" className={styles.logo__icon}/>
           <span className={styles.logo__text}>
-            <span className={styles['logo__text--primary']}>Geo</span>tagger
+            <span className={styles['logo__text--primary']}>Geo</span>Tagger
           </span>
         </div>
 
         <nav className={styles.topbar__nav}>
           <Link to="/home"    className={styles.topbar__link}>Home</Link>
           <Link to="/profile" className={styles.topbar__link}>Profile settings</Link>
-            <button
+          <button
             onClick={handleLogout}
             className={styles.topbar__link}
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
+          >
             Logout
-            </button>
+          </button>
 
           <div className={styles.topbar__points}>
-<div className={styles.points__avatar}>
-  <img
-    src={ profilePic
-      ? `${API_BASE}${profilePic}`
-      : avatarPlaceholder }
-    alt="Avatar"
-    className={styles.points__icon}
-  />
-</div>
-
+            <div className={styles.points__avatar}>
+              <img
+                src={ profilePic
+                  ? `${API_BASE}${profilePic}`
+                  : avatarPlaceholder }
+                alt="Avatar"
+                className={styles.points__icon}
+              />
+            </div>
             <span className={styles.points__value}>{points}</span>
           </div>
 
@@ -187,29 +194,47 @@ useEffect(() => {
 
       {/* ── MAIN ──────────────────────────────────────── */}
       <main className={styles.main}>
-        {/* Personal best */}
+        {/* All user guesses */}
         <section className={styles.section}>
-          <h2 className={styles.section__title}>Personal best guesses</h2>
+          <h2 className={styles.section__title}>Your guesses</h2>
           <p  className={styles.section__subtitle}>
-            Your personal best guesses appear here. Go on and try to beat your personal records or set a new one!
+            Every guess you’ve made appears here, sorted by most recent. Try to beat your personal records or set a new one!
           </p>
 
+          {guessesLoading && !guessesLoadedOnce && (
+            <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+              Loading your guesses...
+            </div>
+          )}
+
+          {!guessesLoading && guessCards.length === 0 && (
+            <div style={{ textAlign: 'center', margin: '2rem 0', color: '#888' }}>
+              You haven't guessed any locations yet.<br/>
+              Start playing by picking a new location below!
+            </div>
+          )}
+
           <div className={`${styles.cards} ${styles['cards--best']}`}>
-            {bestCards.map((g, i) => (
+            {guessCards.map((g, i) => (
               <div
-                key={i}
+                key={g.locationId ?? i}
                 className={styles.card}
                 style={{ backgroundImage: `url(${g.imageUrl})` }}
               >
-                <span className={styles.card__label}>{g.distanceMeters} m</span>
+                <span className={styles.card__label}>{g.errorMeters} m</span>
               </div>
             ))}
           </div>
 
-          {/* left for future paging */}
-          <button className={`${styles.btn} ${styles['btn--outline']} ${styles.section__btn}`}>
-            Load more
+        {hasMoreGuesses && guessCards.length > 0 && (
+          <button
+            className={`${styles.btn} ${styles['btn--outline']} ${styles.section__btn}`}
+            onClick={handleLoadMoreGuesses}
+            disabled={guessesLoading}
+          >
+            {guessesLoading ? 'Loading...' : 'Load more'}
           </button>
+        )}
         </section>
 
         {/* New locations */}
