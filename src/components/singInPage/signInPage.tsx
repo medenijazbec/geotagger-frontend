@@ -80,9 +80,9 @@ const SigninPage: React.FC = () => {
             alt="Geotagger logo"
             className={styles.logo__icon}
           />
-          <span className={styles.logo__text}>
-            <span className={styles['logo__text--primary']}>Geo</span>tagger
-          </span>
+<span className={styles.logo__text}>
+  <span className={styles['logo__text--primary']}>Geo</span>tagger
+</span>
         </header>
 
         <form className={styles['signup__form']} onSubmit={handleLogin}>

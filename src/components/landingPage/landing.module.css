@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
+
 :root {
   --color-primary: #659e89;
   --color-primary-dark: #233d4d;
@@ -38,14 +41,18 @@
   width: auto;
 }
 .logo__text {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
-  font-size: 1.25rem;
+  font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+  font-weight: 700;              
+  font-size: 1.5rem;               
+  letter-spacing: 0.02em;        
   color: var(--color-primary-dark);
-  margin-left: 0.5rem;
+  margin-left: 0rem;
+  line-height: 1.1;
+  display: inline-block;
 }
 .logo__text--primary {
   color: var(--color-primary);
+  font-weight: 500;                /* Montserrat 500 for 'Geo' */
 }
 .logo img {
   height: 40px;

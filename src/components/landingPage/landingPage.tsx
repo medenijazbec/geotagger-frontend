@@ -95,7 +95,10 @@ const LandingPage: React.FC = () => {
       <header className={styles.header}>
         <div className={styles.logo}>
           <img src={logoGradient} alt="Geotagger icon" className={styles.logo__icon} />
-          <span className={styles.logo__text}>Geotagger</span>
+<span className={styles.logo__text}>
+  <span className={styles['logo__text--primary']}>Geo</span>tagger
+</span>
+
         </div>
 
         <nav className={styles.nav}>

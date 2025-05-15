@@ -90,9 +90,9 @@ const SignupPage: React.FC = () => {
       <div className={styles['panel--left']}>
         <header className={styles.signup__header}>
           <img src={gradientLogo} alt="Geotagger" className={styles.logo__icon} />
-          <span className={styles.logo__text}>
-            <span className={styles['logo__text--primary']}>Geo</span>tagger
-          </span>
+<span className={styles.logo__text}>
+  <span className={styles['logo__text--primary']}>Geo</span>tagger
+</span>
         </header>
 
         <form className={styles.signup__form} onSubmit={handleSubmit}>

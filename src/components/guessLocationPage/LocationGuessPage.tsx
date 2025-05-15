@@ -166,9 +166,9 @@ useEffect(() => {
       <header className={styles.topbar}>
         <div className={styles.topbar__left}>
           <img src={logoGradient} className={styles.logo__icon} alt="Geotagger"/>
-          <span className={styles.logo__text}>
-            <span className={styles['logo__text--primary']}>Geo</span>Tagger
-          </span>
+<span className={styles.logo__text}>
+  <span className={styles['logo__text--primary']}>Geo</span>tagger
+</span>
         </div>
         <nav className={styles.topbar__nav}>
           <button onClick={()=>nav('/home')} className={styles.topbar__link}>Home</button>

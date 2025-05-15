@@ -237,9 +237,9 @@ const AddLocationPage: React.FC = () => {
       <header className={styles.topbar}>
         <div className={styles.topbar__left}>
           <img src={gradientLogo} alt="Geotagger" className={styles.logo__icon}/>
-          <span className={styles.logo__text}>
-            <span className={styles['logo__text--primary']}>Geo</span>Tagger
-          </span>
+<span className={styles.logo__text}>
+  <span className={styles['logo__text--primary']}>Geo</span>tagger
+</span>
         </div>
         <nav className={styles.topbar__nav}>
           <Link to="/home"    className={styles.topbar__link}>Home</Link>
