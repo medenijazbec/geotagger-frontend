@@ -179,11 +179,12 @@ html, body {
 /* UPLOAD PREVIEW */
 
 .map-preview {
-  width: 100%;
+  width: 80%;
   border: 1px solid #ccc;
   border-radius: 6px;
   overflow: hidden;
   background: #f0f0f0;
+
 }
 
 /* --- UPLOAD PREVIEW ------------------------------------ */
@@ -203,14 +204,14 @@ html, body {
 
 
 
-  width: 100%;
-  height: 100%;
+  width: 70%;
+  height: 70%;
   object-fit: cover;       /* <- stretches the image edge-to-edge */
  }
 .upload-preview img {
   object-fit: contain;
-  width: 100%;
-  height: 100%;
+  width: 70%;
+  height: 70%;
 }
 .upload-preview__btn {
   display: block;
@@ -226,8 +227,8 @@ html, body {
 }
 .map-preview img {
   object-fit: cover;
-  width: 100%;
-  height: 100%;
+  width: 70%;
+  height: 70%;
 }
 
 /* LOCATION FORM */
@@ -362,7 +363,7 @@ html, body {
   padding: 0 !important;
   width: 40px !important;
   height: 40px !important;
-  display: inline-flex;           /* treat as flex so content is centered */
+  display: inline-flex;          
   align-items: center;
   justify-content: center;
   padding: 0;                     /* no extra padding */
@@ -379,7 +380,26 @@ html, body {
 }
 
 
+.center-80 {
+  width: 80%;
+  margin-inline: auto;     
+}
 
+.map-preview,         
+.upload-preview,     
+.coordsDisplay,       
+.location-form,      
+.upload-preview__btn { 
+  composes: center-80; 
 
+}
 
-
+.map-preview {
+  display: block;      /* guarantees margin auto works   */
+  max-height: 400px;   
+}
+.upload-preview img {
+  width: 100%;
+  height: auto;        
+  object-fit: contain; 
+}
