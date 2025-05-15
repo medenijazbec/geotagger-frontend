@@ -5,7 +5,7 @@ import styles from './landing.module.css';
 
 // ── assets ──────────────────────────────────────────────────────
 import logoGradient    from '../../assets/logo_gradient.png';
-import worldMapImg      from '../../assets/worldmap.svg';
+import worldMapImg      from '../../assets/worldmap.png';
 import card1Img         from '../../assets/placeholder_places1.png';
 import card2Img         from '../../assets/placeholder_places2.png';
 import card3Img         from '../../assets/placeholder_places3.png';
