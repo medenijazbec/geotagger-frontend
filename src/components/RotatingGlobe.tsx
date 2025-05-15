@@ -2,18 +2,29 @@ import React, { useRef, useEffect } from "react";
 import Globe, { GlobeMethods } from "react-globe.gl";
 import * as THREE from "three";
 
-const loadTexture = (url: string) =>
-  new Promise<THREE.Texture>((resolve, reject) =>
-    new THREE.TextureLoader().load(url, resolve, undefined, reject)
-  );
+/* ===== tweakables ================================================= */
+const SHOW_CLOUDS      = true;
+const SHOW_ATMOSPHERE  = true;
+const CLOUD_OPACITY    = 0.34;
+const CLOUD_SPEED      = 0.00004;
+const SUN_DIR = new THREE.Vector3(-0.9, 0.3, -0.25).normalize(); 
 
-// --- simple flags ----------------------------------------------------------
-// flip these to true / false (or lift them into props / state)
-const SHOW_CLOUDS      = true;   //hide or show the clouds
-const SHOW_ATMOSPHERE  = true;    //+ hide or show the glow
-const CLOUD_OPACITY    = 0.36;    
-const CLOUD_SPEED      = 0.000099;  // rotation speed (rad / frame)
-// ---------------------------------------------------------------------------
+/* =================================================================== */
+
+const loadTex = (src: string) =>
+  new Promise<THREE.Texture>((res, rej) =>
+    new THREE.TextureLoader().load(
+      src,
+      t => {
+        t.anisotropy = 16;
+        t.minFilter  = THREE.LinearMipMapLinearFilter;
+        t.magFilter  = THREE.LinearFilter;
+        res(t);
+      },
+      undefined,
+      rej
+    )
+  );
 
 const RealisticGlobe: React.FC = () => {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
@@ -22,99 +33,128 @@ const RealisticGlobe: React.FC = () => {
     const globe = globeRef.current;
     if (!globe) return;
 
-    globe.pointOfView({ altitude: 0.78 }, 0);
+    globe.pointOfView({ altitude: 1.05 }, 0);
     const ctl = globe.controls();
     ctl.autoRotate = true;
-    ctl.autoRotateSpeed = 0.45;
+    ctl.autoRotateSpeed = 0.30;
     ctl.enableZoom = false;
 
     let cloudMesh: THREE.Mesh | null = null;
-    let atmosphereMesh: THREE.Mesh | null = null;
-    let animationId: number | null = null;
+    let atmoMesh : THREE.Mesh | null = null;
+    let rafId    : number | null     = null;
 
-(async () => {
+    (async () => {
+      /* --------- EARTH (day + night shader) ---------------------- */
+      const [dayTex, nightTex] = await Promise.all([
+        loadTex("/earth_daymap_cloudless.jpg"),
+        loadTex("/earth_lights_lrg.jpg")
+      ]);
 
-  // ---------------------------------------------------------------------
-  // CLOUDS
-  // ---------------------------------------------------------------------
-  if (SHOW_CLOUDS) {
-    const cloudTexture = await loadTexture("/cloud_combined_2048_alpha.png");
-    cloudTexture.anisotropy = 16;
+      const earth = new THREE.Mesh(
+        new THREE.SphereGeometry(101, /*★*/ 200, 200),
+        new THREE.ShaderMaterial({
+          uniforms: {
+            dayMap : { value: dayTex   },
+            nightMap: { value: nightTex },
+            sunDir : { value: SUN_DIR   }
+          },
+          vertexShader: `
+            varying vec2 vUv; varying vec3 vN;
+            void main(){
+              vUv = uv;
+              vN  = normalize(normalMatrix * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.);
+            }`,
+          fragmentShader: `
+            uniform sampler2D dayMap, nightMap; uniform vec3 sunDir;
+            varying vec2 vUv; varying vec3 vN;
+            void main(){
+              float k = smoothstep(-.25,.15,dot(normalize(vN), sunDir));
+              vec3 col = mix(texture2D(nightMap, vUv).rgb,
+                             texture2D(dayMap,  vUv).rgb, k);
+              gl_FragColor = vec4(col, 1.);
+            }`
+        })
+      );
+      globe.scene().add(earth);
 
-    const cloudGeometry = new THREE.SphereGeometry(100.6, 75, 75);
-    const cloudMaterial = new THREE.MeshPhongMaterial({
-      map:         cloudTexture,
-      transparent: true,
-      opacity:     CLOUD_OPACITY,   
-      depthWrite:  false
-    });
+      /* --------- CLOUDS ----------------------------------------- */
+      if (SHOW_CLOUDS) {
+        const cloudTex = await loadTex("/cloud_combined_2048_alpha.png");
 
-    cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
-    globe.scene().add(cloudMesh);
+        const cloudMat = new THREE.MeshPhongMaterial({
+          map: cloudTex,
+          transparent: true,
+          opacity: CLOUD_OPACITY,
+          depthWrite: false,
+          depthTest:  true,
+          /* ★ depth bias – push the clouds a hair closer to the camera */
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits : -1
+        });
 
-    const animate = () => {
-      if (cloudMesh) cloudMesh.rotation.y += CLOUD_SPEED;
-      animationId = requestAnimationFrame(animate);
-    };
-    animate();
-  }
+        cloudMesh = new THREE.Mesh(
+          /* ★ radius bumped from 101 → 102 */
+          new THREE.SphereGeometry(102, 160, 160),
+          cloudMat
+        );
+        cloudMesh.renderOrder = 1;
+        globe.scene().add(cloudMesh);
 
-  // ---------------------------------------------------------------------
-  // ATMOSPHERE
-  // ---------------------------------------------------------------------
-  if (SHOW_ATMOSPHERE) {
-    const atmoGeometry = new THREE.SphereGeometry(101.3, 75, 75);
-    const atmoMaterial = new THREE.ShaderMaterial({
-      uniforms: {},
-      vertexShader: `
-        varying vec3 vNormal;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vNormal;
-        void main() {
-          float intensity = pow(0.7 - dot(vNormal, vec3(0,0,1.0)), 7.0);
-          gl_FragColor = vec4(0.3, 0.7, 1.0, 0.65) * intensity;
-        }
-      `,
-      blending:    THREE.AdditiveBlending,
-      side:        THREE.BackSide,
-      transparent: true
-    });
-    atmosphereMesh = new THREE.Mesh(atmoGeometry, atmoMaterial);
-    globe.scene().add(atmosphereMesh);
-  }
-})();
+        const spin = () => {
+          if (cloudMesh) cloudMesh.rotation.y += CLOUD_SPEED;
+          rafId = requestAnimationFrame(spin);
+        };
+        spin();
+      }
 
+      /* --------- ATMOSPHERE ------------------------------------- */
+      if (SHOW_ATMOSPHERE) {
+        atmoMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(104, 160, 160),
+          new THREE.ShaderMaterial({
+            vertexShader: `
+              varying vec3 n;
+              void main(){ n = normalize(normalMatrix * normal);
+                           gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+            fragmentShader: `
+              varying vec3 n;
+              void main(){
+                float i = pow(.5 - dot(n, vec3(0,0,1.)), 4.);
+                gl_FragColor = vec4(vec3(0.10,0.50,1.0) * i, 1.);
+              }`,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+          })
+        );
+        atmoMesh.renderOrder = 2;
+        globe.scene().add(atmoMesh);
+      }
+    })();
 
-    // -------- cleanup ----------
+    /* -------- cleanup -------- */
     return () => {
-      if (animationId !== null) cancelAnimationFrame(animationId);
-      if (cloudMesh) {
-        globe.scene().remove(cloudMesh);
-        (cloudMesh.material as THREE.Material).dispose();
-        cloudMesh.geometry.dispose();
-      }
-      if (atmosphereMesh) {
-        globe.scene().remove(atmosphereMesh);
-        (atmosphereMesh.material as THREE.Material).dispose();
-        atmosphereMesh.geometry.dispose();
-      }
+      if (rafId) cancelAnimationFrame(rafId);
+      [cloudMesh, atmoMesh].forEach(m => {
+        if (!m) return;
+        globe.scene().remove(m);
+        (m.material as THREE.Material).dispose();
+        m.geometry.dispose();
+      });
     };
   }, []);
 
   return (
     <Globe
-      ref={globeRef}
+      ref={globeRef as any}
       backgroundColor="rgba(0,0,0,0)"
-      width={undefined}
-      height={undefined}
       globeImageUrl="/earth_daymap_cloudless.jpg"
       bumpImageUrl="/earth_daymap_cloudless.jpg"
       backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"
+      width={undefined}
+      height={undefined}
     />
   );
 };
