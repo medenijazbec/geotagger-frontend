@@ -2,74 +2,47 @@
 import { useMemo } from "react";
 import { jwtDecode } from "jwt-decode";
 
-interface Decoded {
+interface AppClaims {
   sub?: string;
+  exp?: number;
   role?: string | string[];
   roles?: string[];
-  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"?:
-    | string
-    | string[];
-  [key: string]: any;
+  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"?: string | string[];
+  external?: "0" | "1";
 }
 
-/*export function useAuth() {
+export const useAuth = () => {
   const token = localStorage.getItem("token");
-  const decoded: Decoded = useMemo(() => {
+  const claims = useMemo<Partial<AppClaims>>(() => {
     if (!token) return {};
     try {
-      return jwtDecode<Decoded>(token);
+      return jwtDecode<AppClaims>(token);
     } catch {
       return {};
     }
   }, [token]);
 
-  const isLoggedIn = Boolean(decoded.sub);
+  const isLoggedIn =
+    !!token && !!claims.sub && (!claims.exp || claims.exp * 1000 > Date.now());
 
-  const roles = [
-    decoded.role,
-    ...(decoded.roles || []),
-    decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+  const rawRoles = [
+    claims.role,
+    claims.roles,
+    claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
   ]
-  .flat()
-  .filter(Boolean) as string[];
+    .flat()
+    .filter(Boolean) as string[];
 
+  const roles = [...new Set(rawRoles)];
   const isAdmin = roles.includes("Admin");
+  const isExternal = claims.external === "1";
 
-  console.log("Roles from token:", roles);
-
-  return { isLoggedIn, roles, isAdmin };
-}
-*/ 
-
-
-export function useAuth() {
-  const token = localStorage.getItem("token");
-  const decoded: Decoded = useMemo(() => {
-    if (!token) return {};
-    try {
-      const decodedToken = jwtDecode<Decoded>(token);
-      console.log(decodedToken); // Important debugging step
-      return decodedToken;
-    } catch (e) {
-      console.error(e);
-      return {};
-    }
-  }, [token]);
-  
-
-
-
-  
-  const isLoggedIn = Boolean(decoded.sub);
-
-  // collect all possible role fields into a single array:
-  const raw =
-    decoded.role ??
-    decoded.roles ??
-    decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-  const roles = Array.isArray(raw) ? raw : raw ? [raw] : [];
-
-  const isAdmin = roles.includes("Admin");
-
-  return { isLoggedIn, roles, isAdmin };
-}
+  return {
+    token,
+    claims,
+    isLoggedIn,
+    isAdmin,
+    isExternal,
+    roles,
+  };
+};

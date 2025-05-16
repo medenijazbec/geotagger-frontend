@@ -14,6 +14,7 @@ import avatarPlaceholder from '../../assets/profile_white.png';
 import plusIcon          from '../../assets/plus.png';
 import pencilIcon        from '../../assets/pencil.png';
 import xIcon             from '../../assets/x.png';
+import { useAuth } from '../../utils/useAuth';
 
 /* ─ DTOs ─ */
 interface ProfileDto {
@@ -52,7 +53,7 @@ const ProfilePage: React.FC = () => {
   const token = localStorage.getItem('token') || '';
   if (!token) { nav('/signin'); return null; }
   const auth = { headers: { Authorization: `Bearer ${token}` } };
-
+  const { isExternal } = useAuth();
   // ─── PROFILE/POINTS ───────────────────────────────────────────────────
   const [profile , setProfile ] = useState<ProfileDto | null>(null);
   const [points, setPoints] = useState<number>(0);
@@ -349,18 +350,22 @@ const ProfilePage: React.FC = () => {
           >
             Change info
           </button>
-          <button
-            className={styles.dropdownItem}
-            onClick={() => { setPicOpen(true); setMenuOpen(false); }}
-          >
-            Change picture
-          </button>
-          <button
-            className={styles.dropdownItem}
-            onClick={() => { setPwOpen(true); setMenuOpen(false); }}
-          >
-            Change password
-          </button>
+             <button
+      className={styles.dropdownItem}
+      onClick={() => { setPicOpen(true); setMenuOpen(false); }}
+    >
+      Change picture
+    </button>
+
+    {/* external accounts can’t change the password */}
+    {!isExternal && (
+      <button
+        className={styles.dropdownItem}
+        onClick={() => { setPwOpen(true); setMenuOpen(false); }}
+      >
+        Change password
+      </button>
+    )}
         </div>
       )}
 
@@ -563,8 +568,10 @@ const ProfilePage: React.FC = () => {
             <input
               type="email"
               value={mail}
+              readOnly={isExternal}               /* lock */
               onChange={e => setMail(e.target.value)}
               required
+              style={isExternal ? { cursor:"not-allowed", opacity:.55 } : {}}
             />
           </div>
           <div className={styles.row}>
@@ -589,22 +596,27 @@ const ProfilePage: React.FC = () => {
               />
             </div>
           </div>
-          <div className={styles.links}>
-            <button
-              type="button"
-              className={styles.linkBtn}
-              onClick={() => { setPwOpen(true); setEditOpen(false); }}
-            >
-              Change password
-            </button>
-            <button
-              type="button"
-              className={styles.linkBtn}
-              onClick={() => { setPicOpen(true); setEditOpen(false); }}
-            >
-              Change profile picture
-            </button>
-          </div>
+<div className={styles.links}>
+  {/* Only render if NOT external */}
+  {!isExternal && (
+    <button
+      type="button"
+      className={styles.linkBtn}
+      onClick={() => { setPwOpen(true); setEditOpen(false); }}
+    >
+      Change password
+    </button>
+  )}
+  <button
+    type="button"
+    className={styles.linkBtn}
+    onClick={() => { setPicOpen(true); setEditOpen(false); }}
+  >
+    Change profile picture
+  </button>
+</div>
+
+
           <div className={styles.actionRow}>
             <button
               type="button"
@@ -619,34 +631,38 @@ const ProfilePage: React.FC = () => {
       </Modal>
 
       {/* ───  CHANGE PASSWORD MODAL ───────────────────────────── */}
-      <Modal open={pwOpen} onClose={() => setPwOpen(false)}>
-        <h2 data-highlight="settings.">Profile </h2>
-        <p>Change your password.</p>
-        <form className={styles.editForm} onSubmit={changePw}>
-          <div className={styles.field}>
-            <label>Current password</label>
-            <input name="current" type="password" required/>
-          </div>
-          <div className={styles.field}>
-            <label>New password</label>
-            <input name="new" type="password" required/>
-          </div>
-          <div className={styles.field}>
-            <label>Repeat new password</label>
-            <input name="confirm" type="password" required/>
-          </div>
-          <div className={styles.actionRow}>
-            <button
-              type="button"
-              className={styles.cancelBtn}
-              onClick={() => setPwOpen(false)}
-            >
-              Cancel
-            </button>
-            <button type="submit" className={styles.saveBtn}>Submit</button>
-          </div>
-        </form>
-      </Modal>
+{/* Only mount Modal for native users */}
+{pwOpen && !isExternal && (
+  <Modal open={pwOpen} onClose={() => setPwOpen(false)}>
+    <h2 data-highlight="settings.">Profile </h2>
+    <p>Change your password.</p>
+    <form className={styles.editForm} onSubmit={changePw}>
+      <div className={styles.field}>
+        <label>Current password</label>
+        <input name="current" type="password" required />
+      </div>
+      <div className={styles.field}>
+        <label>New password</label>
+        <input name="new" type="password" required />
+      </div>
+      <div className={styles.field}>
+        <label>Repeat new password</label>
+        <input name="confirm" type="password" required />
+      </div>
+      <div className={styles.actionRow}>
+        <button
+          type="button"
+          className={styles.cancelBtn}
+          onClick={() => setPwOpen(false)}
+        >
+          Cancel
+        </button>
+        <button type="submit" className={styles.saveBtn}>Submit</button>
+      </div>
+    </form>
+  </Modal>
+)}
+
 
       {/* ───  CHANGE PFP MODAL ───────────────────────────────── */}
       <Modal open={picOpen} onClose={() => setPicOpen(false)}>
@@ -674,16 +690,15 @@ const ProfilePage: React.FC = () => {
           </div>
         ) : (
           <div className={styles.pfpAvatar}>
-            <img
-              src={
-                preview ?? (
-                  profilePic
-                    ? `${API_BASE}${profilePic}`
-                    : avatarPlaceholder
-                )
-              }
-              alt="preview"
-            />
+<img
+  src={
+    profilePic
+      ? (profilePic.startsWith("http") ? profilePic : `${API_BASE}${profilePic}`)
+      : avatarPlaceholder
+  }
+  alt="avatar"
+/>
+
           </div>
         )}
         {/* upload-file control */}
