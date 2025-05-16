@@ -25,18 +25,27 @@ const LandingPage: React.FC = () => {
   const [locations, setLocations] = useState<Location[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    fetch('/api/Locations?page=1&pageSize=3')
-      .then((res) => res.ok ? res.json() : Promise.reject())
-      .then((data: Location[]) => {
-        setLocations(data.slice(0, 3)); // Ensure only 3
-        setLoading(false);
-      })
-      .catch(() => {
-        setLocations([]);
-        setLoading(false);
-      });
-  }, []);
+useEffect(() => {
+  fetch('/api/Locations?page=1&pageSize=15')
+    .then((res) => res.ok ? res.json() : Promise.reject())
+    .then((data: Location[]) => {
+      // Deduplicate by locationId
+      const unique = Array.from(
+        new Map(data.map(item => [item.locationId, item])).values()
+      );
+
+      // Randomly shuffle and pick 3
+      const shuffled = unique.sort(() => 0.5 - Math.random());
+      setLocations(shuffled.slice(0, 3));
+      setLoading(false);
+    })
+    .catch(() => {
+      setLocations([]);
+      setLoading(false);
+    });
+}, []);
+
+
 
   //skeleton/fallback for cards while loading
   const demoCards = loading

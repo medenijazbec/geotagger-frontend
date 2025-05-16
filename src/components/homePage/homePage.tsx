@@ -101,18 +101,24 @@ const loadGuesses = async (pageNum: number) => {
   };
 
   // --- Fetch new locations (unchanged) ---
-  const loadLocations = async (p: number) => {
-    try {
-      const r = await fetch(
-        `${API_BASE}/api/Locations?page=${p}&pageSize=9`,
-        { headers: authHeader() }
-      );
-      if (r.ok) {
-        const rows: LocationDto[] = await r.json();
-        setNewLocations((prev) => [...prev, ...rows]);
-      }
-    } catch {/* ignore */}
-  };
+const loadLocations = async (p: number) => {
+  try {
+    const r = await fetch(
+      `${API_BASE}/api/Locations?page=${p}&pageSize=9`,
+      { headers: authHeader() }
+    );
+    if (r.ok) {
+      const rows: LocationDto[] = await r.json();
+      setNewLocations(prev => {
+        // Deduplicate by locationId
+        const seen = new Set(prev.map(loc => loc.locationId));
+        const filtered = rows.filter(loc => !seen.has(loc.locationId));
+        return [...prev, ...filtered];
+      });
+    }
+  } catch {/* ignore */}
+};
+
 
   // --- First load ---
   useEffect(() => {
