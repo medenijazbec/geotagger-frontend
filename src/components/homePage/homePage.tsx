@@ -3,7 +3,7 @@
    ────────────────────────────────────────────────────────── */
 
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './home.module.css';
 import { API_BASE } from '../../config';
 
@@ -37,6 +37,7 @@ const authHeader = (): HeadersInit => {
 
 const HomePage: React.FC = () => {
   const nav = useNavigate();
+  const location = useLocation();
   const PAGE_SIZE = 3;
   // Points/profile state
   const [points, setPoints] = useState<number>(0);
@@ -52,6 +53,26 @@ const HomePage: React.FC = () => {
   // New locations (unchanged)
   const [newLocations, setNewLocations] = useState<LocationDto[]>([]);
   const [page, setPage] = useState(1);
+
+ // --- Handle token from OAuth redirect ---
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const externalSuccess = params.get('externalLogin') === 'success';
+    const token = params.get('token');
+    if (externalSuccess && token) {
+      localStorage.setItem('token', token);
+      // Remove the query string for a clean Home URL
+      nav('/home', { replace: true });
+    }
+    // Optional: handle error from /home?externalLogin=error&message=...
+  }, [location.search, nav]);
+
+useEffect(() => {
+  if (!localStorage.getItem('token')) {
+    nav('/signin', { replace: true });
+  }
+}, [nav]);
+
 
   // --- Fetch profile points and profile pic exactly as LocationGuessPage does ---
   const fetchProfile = async () => {

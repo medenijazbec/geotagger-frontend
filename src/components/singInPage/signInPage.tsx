@@ -1,12 +1,11 @@
 // src/components/singInPage/signInPage.tsx
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import styles from './signin.module.css';
 import { API_BASE } from '../../config';
 
 // static asset imports
 import gradientLogo       from '../../assets/logo_gradient.png';
-import mapImage           from '../../assets/signinMap.png';
 import logoGradientWhite  from '../../assets/logo_gradient_white.png';
 import googleIcon         from '../../assets/google-icon.png';
 import facebookIcon       from '../../assets/facebook-icon.png';
@@ -22,11 +21,30 @@ type Msg = { type: 'error' | 'success'; text: string } | null;
 
 const SigninPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // form state
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg]           = useState<Msg>(null);
+
+  // Handle OAuth redirect after backend completes
+  useEffect(() => {
+    // Example: /home?externalLogin=success&token=xxx
+    const params = new URLSearchParams(location.search);
+    const externalSuccess = params.get('externalLogin') === 'success';
+    const token = params.get('token');
+    const externalError = params.get('externalLogin') === 'error';
+    const message = params.get('message');
+
+    if (externalSuccess && token) {
+      localStorage.setItem('token', token);
+      setMsg({ type: 'success', text: 'Login successful! Redirecting…' });
+      setTimeout(() => navigate('/home', { replace: true }), 1200);
+    } else if (externalError) {
+      setMsg({ type: 'error', text: decodeURIComponent(message || 'External login failed.') });
+    }
+  }, [location.search, navigate]);
 
   // basic validation
   const isLoginValid =
@@ -57,18 +75,18 @@ const SigninPage: React.FC = () => {
       localStorage.setItem('token', data.token);
       setMsg({ type: 'success', text: 'Login successful! Redirecting…' });
 
-      // redirect to /home instead of /
       setTimeout(() => navigate('/home', { replace: true }), 1200);
     } catch {
       setMsg({ type: 'error', text: 'Network error. Please try again.' });
     }
   };
 
+  // These will redirect to your backend's external OAuth flow
   const handleGoogle = () => {
-    setMsg({ type: 'error', text: 'Google sign-in not configured yet.' });
+    window.location.href = `${API_BASE}/api/Auth/ExternalLogin?provider=Google&returnUrl=/home`;
   };
   const handleFacebook = () => {
-    setMsg({ type: 'error', text: 'Facebook sign-in not configured yet.' });
+    window.location.href = `${API_BASE}/api/Auth/ExternalLogin?provider=Facebook&returnUrl=/home`;
   };
 
   return (
@@ -81,9 +99,9 @@ const SigninPage: React.FC = () => {
             alt="Geotagger logo"
             className={styles.logo__icon}
           />
-<span className={styles.logo__text}>
-  <span className={styles['logo__text--primary']}>Geo</span>tagger
-</span>
+          <span className={styles.logo__text}>
+            <span className={styles['logo__text--primary']}>Geo</span>tagger
+          </span>
         </header>
 
         <form className={styles['signup__form']} onSubmit={handleLogin}>
@@ -167,16 +185,15 @@ const SigninPage: React.FC = () => {
       </div>
 
       {/* RIGHT PANEL: tinted map + white logo */}
-<div className={styles['panel--right']}>
-  <div className={styles['rotating-globe-container']}>
-    <RotatingGlobe />
-  </div>
-   {/* <div className={styles.overlay}></div> */}
-  <div className={styles['right-logo-wrapper']}>
-    <img src={logoGradientWhite} alt="Geotagger" className={styles['right-logo']} />
-  </div>
-</div>
-
+      <div className={styles['panel--right']}>
+        <div className={styles['rotating-globe-container']}>
+          <RotatingGlobe />
+        </div>
+        {/* <div className={styles.overlay}></div> */}
+        <div className={styles['right-logo-wrapper']}>
+          <img src={logoGradientWhite} alt="Geotagger" className={styles['right-logo']} />
+        </div>
+      </div>
     </div>
   );
 };
