@@ -41,23 +41,28 @@ const SignupPage: React.FC = () => {
 
   const formValid   = vEmail && vFirst && vLast && vPwd && vPwdMatch;
 
-  /* submit */
- const handleSubmit = async (e: React.FormEvent) => {
+/* ─────────────────────────────────────────────────────────── */
+/*  SUBMIT – create account → wait for confirm-mail           */
+/* ─────────────────────────────────────────────────────────── */
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setMsg(null);
 
-  // proper validation
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if (!emailValid || firstName.length < 2 || lastName.length < 2 || password.length < 8 || password !== password2) {
-    setMsg({ type: 'error', text: 'Please correctly fill all fields.' });
+  /* quick client-side validation */
+  if (
+    !emailRx.test(email) ||
+    firstName.length < 2 || lastName.length < 2 ||
+    !pwdRx.test(password) || password !== password2
+  ) {
+    setMsg({ type: "error", text: "Please correctly fill all fields." });
     return;
   }
 
   try {
     const res = await fetch(`${API_BASE}/api/Auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      method : "POST",
+      headers: { "Content-Type": "application/json" },
+      body   : JSON.stringify({
         name: firstName,
         surname: lastName,
         email,
@@ -67,21 +72,30 @@ const SignupPage: React.FC = () => {
     });
 
     if (!res.ok) {
-      const data = await res.json();
+      const data: ApiMessage = await res.json();
       setMsg({
-        type: 'error',
-        text: data.Errors?.[0]?.Description || data.Message || 'Registration failed.',
+        type: "error",
+        text:
+          data.Errors?.[0]?.Description ??
+          data.Message                  ??
+          "Registration failed.",
       });
       return;
     }
 
-    setMsg({ type: 'success', text: 'Registration successful! Redirecting…' });
-    setTimeout(() => nav('/signin', { replace: true }), 1500);
-  } catch (err) {
-    setMsg({ type: 'error', text: 'Network error. Please try again.' });
-    console.error("Error:", err);
+    /* success – tell the user to verify their inbox */
+    setMsg({
+      type : "success",
+      text : "Registration successful! Check your inbox to confirm your e-mail.",
+    });
+
+    /* after a short delay send them to /signin */
+    setTimeout(() => nav("/signin", { replace: true }), 2500);
+  } catch {
+    setMsg({ type: "error", text: "Network error. Please try again." });
   }
 };
+
 
 
   /* ── render ── */

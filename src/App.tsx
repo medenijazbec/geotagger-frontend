@@ -16,6 +16,8 @@ import AddLocationPage from './components/addLocationPage/AddLocationPage';
 import EditLocationPage from './components/editLocationPage/EditLocationPage';
 import GuessLocationPage from './components/guessLocationPage/LocationGuessPage';
 import RequireAuth from './components/RequireAuth';
+import ConfirmEmailPage   from "./components/emailConfirmationPage/confirmEmailPage";
+import ResetPasswordPage  from "./components/resetPasswordPage/resetPasswordPage";
 
 export function App() {
   return (
@@ -25,6 +27,8 @@ export function App() {
         <Route path="/"       element={<LandingPage />} />
         <Route path="/signin" element={<SigninPage />}  />
         <Route path="/signup" element={<SingupPage />}  />
+        <Route path="/confirm-email"   element={<ConfirmEmailPage />} />
+        <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
         {/* Private / Protected */}
         <Route
