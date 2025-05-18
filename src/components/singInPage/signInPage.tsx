@@ -24,9 +24,12 @@ const SigninPage: React.FC = () => {
   const location = useLocation();
 
   // form state
-  const [email, setEmail]       = useState('');
+  //const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg]           = useState<Msg>(null);
+
+  const [email, setEmail] = useState(() => location.state?.email || "");
+
 
   // Handle OAuth redirect after backend completes
   useEffect(() => {
@@ -37,6 +40,8 @@ const SigninPage: React.FC = () => {
     const externalError = params.get('externalLogin') === 'error';
     const message = params.get('message');
 
+
+    
     if (externalSuccess && token) {
       localStorage.setItem('token', token);
       setMsg({ type: 'success', text: 'Login successful! Redirecting…' });
@@ -148,6 +153,16 @@ const SigninPage: React.FC = () => {
               <span className={`${styles.icon} ${styles['icon--eye']}`}></span>
             </div>
           </div>
+          <p className={styles['signup__footer-text']}>
+          <span
+            className={styles['link--secondary']}
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/reset-password", { state: { email } })}
+          >
+            Forgot password?
+          </span>
+
+          </p>
 
           <button
             type="submit"

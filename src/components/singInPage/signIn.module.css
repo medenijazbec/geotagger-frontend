@@ -241,3 +241,16 @@ input:focus {
   transform: translate(-50%, -50%);
   z-index: 3;
 }
+.link--secondary {
+  color: var(--color-primary);
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+.link--secondary:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
