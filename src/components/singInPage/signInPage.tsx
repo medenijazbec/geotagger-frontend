@@ -69,6 +69,16 @@ const SigninPage: React.FC = () => {
 
       const data: LoginResponse = await resp.json();
 
+ // Look for "Please confirm your email before signing in."
+    if (!resp.ok || !data.token) {
+      setMsg({
+        type: 'error',
+        text: data.error || data.message || 'Login failed.',
+      });
+      return;
+    }
+
+
       if (!resp.ok || !data.token) {
         setMsg({
           type: 'error',
