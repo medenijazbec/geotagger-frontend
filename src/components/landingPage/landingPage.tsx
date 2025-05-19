@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './landing.module.css';
-
+import { makeImgUrl } from '../../utils/img';
 // ── assets ──────────────────────────────────────────────────────
 import logoGradient from '../../assets/logo_gradient.png';
 import worldMapImg from '../../assets/worldmap.png';
@@ -17,6 +17,32 @@ interface Location {
   longitude: number;
   imageUrl: string;
 }
+const PLACEHOLDERS: Location[] = [
+  {
+    locationId: -1,
+    title: "Coming soon",
+    description: "",
+    latitude: 0,
+    longitude: 0,
+    imageUrl: "/images/placeholder_places1.png",
+  },
+  {
+    locationId: -2,
+    title: "Coming soon",
+    description: "",
+    latitude: 0,
+    longitude: 0,
+    imageUrl: "/images/placeholder_places2.png",
+  },
+  {
+    locationId: -3,
+    title: "Coming soon",
+    description: "",
+    latitude: 0,
+    longitude: 0,
+    imageUrl: "/images/placeholder_places3.png",
+  },
+];
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -40,23 +66,46 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
-  fetch('/api/Locations?page=1&pageSize=15')
-    .then((res) => res.ok ? res.json() : Promise.reject())
-    .then((data: Location[]) => {
-      // Deduplicate by locationId
-      const unique = Array.from(
-        new Map(data.map(item => [item.locationId, item])).values()
-      );
+  const fetchRandomLocations = async () => {
+    setLoading(true);
 
-      // Randomly shuffle and pick 3
-      const shuffled = unique.sort(() => 0.5 - Math.random());
-      setLocations(shuffled.slice(0, 3));
+    try {
+      /* --------------------------------------------
+         Keep requesting /api/Locations/random until
+         we have THREE *unique* locationIds.
+         A safety cap (MAX_ATTEMPTS) prevents any
+         endless loop if the API has <3 active pics.
+      -------------------------------------------- */
+      const found = new Map<number, Location>();
+      let attempts = 0;
+      const MAX_ATTEMPTS = 12;               // ~4 network round-trips
+
+      while (found.size < 3 && attempts < MAX_ATTEMPTS) {
+        attempts += 1;
+        const res = await fetch('/api/Locations/random');
+        if (!res.ok) continue;               // ignore network / 404 errors
+
+        const loc = (await res.json()) as Location;
+        found.set(loc.locationId, loc);      // Map dedupes by id
+      }
+
+      /* If the backend returned <3 *unique* locations
+         we fill the remainder by repeating the ones we got,
+         so the UI still shows exactly three cards.          */
+      const list: Location[] = [...found.values()];
+      while (list.length < 3 && list.length > 0) {
+        list.push(list[list.length % found.size]);
+      }
+
+      setLocations(list);
+    } catch {
+      setLocations([]);                      // fallback – keep previous placeholders
+    } finally {
       setLoading(false);
-    })
-    .catch(() => {
-      setLocations([]);
-      setLoading(false);
-    });
+    }
+  };
+
+  fetchRandomLocations();
 }, []);
 
 
@@ -79,27 +128,27 @@ useEffect(() => {
 <div
   key={loc.locationId}
   className={styles.demo__card}
-  onClick={() => {
-  logUserAction({
-    actionType: "click",
-    componentType: "card",
-    url: window.location.pathname
-  });
-  goSignin();
-}}
+  onClick={goSignin}
   title={loc.title}
+  style={{ position: 'relative' }}
 >
+  {/* Background image */}
   <div
-    className={styles.demo__card}
-    style={{ backgroundImage: `url(${loc.imageUrl})` }}
+    className={styles.demo__cardBg}
+    style={{
+      backgroundImage: `url(${makeImgUrl(loc.imageUrl)})`  // ← FIX
+    }}
   />
+
+  {/* Green overlay */}
   <div className={styles.demo__overlay__green}>
     <span
       className={styles.iconLock}
       style={{ backgroundImage: `url(${padlockPng})` }}
-    ></span>
+    />
   </div>
 </div>
+
 
           ))
         : // fallback to static placeholders if API fails

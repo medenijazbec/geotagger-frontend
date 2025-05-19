@@ -167,15 +167,6 @@
 
 }
 /* ← Fixed: use your actual `placeholder_placesX.png` names below: */
-.card--1 {
-  background-image: url('../images/placeholder_places1.png');
-}
-.card--2 {
-  background-image: url('../images/placeholder_places2.png');
-}
-.card--3 {
-  background-image: url('../images/placeholder_places3.png');
-}
 
 .demo__overlay {
   position: absolute;
@@ -268,4 +259,42 @@
   background: url('../images/padlock.png') no-repeat center / contain;
   opacity: 1;
   z-index: 3;
+}
+.demo__card {
+  position: relative;
+  flex: 1;
+  height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.demo__cardBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+.demo__overlay__green {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(101, 158, 137, 0.55);
+  border-radius: 8px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.iconLock {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  z-index: 3;
+  opacity: 1;
 }
