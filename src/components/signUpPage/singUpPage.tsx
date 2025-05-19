@@ -228,21 +228,14 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className={styles.field}>
             <label>Password</label>
             <div className={styles.inputIcon}>
-<input
-  type="password"
-  placeholder="••••••••"
-  value={password}
-  onChange={e => {
-    logUserAction({
-      actionType: "changed_value",
-      componentType: "textbox",
-      newValue: e.target.value,
-      url: window.location.pathname
-    });
-    setPassword(e.target.value);
-  }}
-  required
-/>
+         <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+
               <span className={`${styles.icon} ${styles['icon--eye']}`} />
             </div>
             {!vPwd && password && (
@@ -257,20 +250,14 @@ const handleSubmit = async (e: React.FormEvent) => {
             <label>Repeat password</label>
             <div className={styles.inputIcon}>
 <input
-  type="password"
-  placeholder="••••••••"
-  value={password2}
-  onChange={e => {
-    logUserAction({
-      actionType: "changed_value",
-      componentType: "textbox",
-      newValue: e.target.value,
-      url: window.location.pathname
-    });
-    setPassword2(e.target.value);
-  }}
-  required
-/>
+                type="password"
+                placeholder="••••••••"
+                value={password2}
+                onChange={e => setPassword2(e.target.value)}
+                required
+              />
+
+
               <span className={`${styles.icon} ${styles['icon--eye']}`} />
             </div>
             {!vPwdMatch && password2 && (

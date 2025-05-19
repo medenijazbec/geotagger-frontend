@@ -103,39 +103,34 @@ useEffect(() => {
           )}
           <label>New password</label>
 <input
-  type="password"
-  value={pwd1}
-  onChange={e => {
-    logUserAction({
-      actionType: "changed_value",
-      componentType: "textbox",
-      newValue: e.target.value,
-      url: window.location.pathname
-    });
-    setPwd1(e.target.value);
-    setPwdTouched(true);
-  }}
-  onBlur={() => setPwdTouched(true)}
-  required
-  autoFocus
-/>
+            type="password"
+            value={pwd1}
+            onChange={e => {
+              setPwd1(e.target.value);
+              setPwdTouched(true);
+            }}
+            onBlur={() => setPwdTouched(true)}
+            required
+            autoFocus
+          />
           <label>Repeat new password</label>
 <input
-  type="password"
-  value={pwd2}
-  onChange={e => {
-    logUserAction({
-      actionType: "changed_value",
-      componentType: "textbox",
-      newValue: e.target.value,
-      url: window.location.pathname
-    });
-    setPwd2(e.target.value);
-    setPwd2Touched(true);
-  }}
-  onBlur={() => setPwd2Touched(true)}
-  required
-/>
+            type="password"
+            value={pwd2}
+            onChange={e => {
+              setPwd2(e.target.value);
+              setPwd2Touched(true);//dont log pass
+            }}
+            onBlur={() => setPwd2Touched(true)}
+            required
+          />
+
+
+
+
+
+
+
           {showPwdValidation && (
             <p style={{ color: "red" }}>
               8+ chars, 1 upper, 1 lower, 1 digit, 1 symbol, and both must match.
