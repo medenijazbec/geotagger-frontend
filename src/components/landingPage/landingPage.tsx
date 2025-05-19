@@ -82,7 +82,8 @@ useEffect(() => {
 
       while (found.size < 3 && attempts < MAX_ATTEMPTS) {
         attempts += 1;
-        const res = await fetch('/api/Locations/random');
+        const res = await fetch('/api/api/Locations/random');
+        //const res = await fetch('/api/Locations/random');
         if (!res.ok) continue;               // ignore network / 404 errors
 
         const loc = (await res.json()) as Location;
