@@ -1,35 +1,50 @@
+// src/utils/logUserAction.ts
 import { API_BASE } from "../config";
 
-// Action types your app logs
-export type ActionType = "click" | "scroll" | "added_value" | "changed_value" | "removed_value";
+export type ActionType =
+  | "click"
+  | "scroll"
+  | "added_value"
+  | "changed_value"
+  | "removed_value";
 
-// Helper to log user actions to backend
-export function logUserAction({
-  actionType,
-  componentType,
-  newValue,
-  url,
-  asGuestUserId, // Only use this for non-authenticated logging, rare
-}: {
-  actionType: ActionType,
-  componentType?: string | null,
-  newValue?: string | null,
-  url: string,
-  asGuestUserId?: string, // optional, only for guests
+/* ------------------------------------------------------------------ */
+/*  SCROLL THROTTLE                                                   */
+/* ------------------------------------------------------------------ */
+let lastScrollLogTime = 0;
+const SCROLL_THROTTLE_MS = 1_500;               // 1.5 s
+
+/* ------------------------------------------------------------------ */
+/*  MAIN HELPER                                                       */
+/* ------------------------------------------------------------------ */
+export function logUserAction(opts: {
+  actionType: ActionType;
+  componentType?: string | null;
+  newValue?: string | null;
+  url: string;
+  guestId?: string;                             // **only** for NON-logged-in users
 }) {
+  const { actionType, componentType, newValue, url, guestId } = opts;
+
+  /* throttle scroll events */
+  if (actionType === "scroll") {
+    const now = Date.now();
+    if (now - lastScrollLogTime < SCROLL_THROTTLE_MS) return;
+    lastScrollLogTime = now;
+  }
+
   const token = localStorage.getItem("token");
 
-  // Build log object for POST body
-  const log: any = {
+  const payload: Record<string, unknown> = {
     actionType,
     componentType,
     newValue,
     url,
   };
 
-  // Only include userId if explicitly logging as a guest
-  if (asGuestUserId) {
-    log.userId = asGuestUserId;
+  /* attach userId ONLY for guests (back-end will take JWT for members) */
+  if (!token && guestId) {
+    payload.userId = guestId;
   }
 
   fetch(`${API_BASE}/api/log/log-action`, {
@@ -38,8 +53,8 @@ export function logUserAction({
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(log),
+    body: JSON.stringify(payload),
   }).catch(() => {
-    //add error tracking
+    /* fire-and-forget – swallow network errors */
   });
 }
