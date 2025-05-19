@@ -18,6 +18,15 @@ import GuessLocationPage from './components/guessLocationPage/LocationGuessPage'
 import RequireAuth from './components/RequireAuth';
 import ConfirmEmailPage   from "./components/emailConfirmationPage/confirmEmailPage";
 import ResetPasswordPage  from "./components/resetPasswordPage/resetPasswordPage";
+import AdminLayout from './components/admin/AdminLayout';
+import UsersPage from './components/admin/UsersPage';
+import UserDetailPage from './components/admin/UserDetailPage';
+import LocationDetailPage from './components/admin/LocationDetailPage';
+import LocationsPage from './components/admin/LocationsPage';
+import ActivityLogPage from './components/admin/ActivityLogPage';
+import RequireAdmin from './components/RequireAdmin';
+
+
 
 export function App() {
   return (
@@ -58,7 +67,7 @@ export function App() {
 
         <Route 
         path="/guess-location/:id" 
-        element={<GuessLocationPage />} />
+        element={<RequireAuth><GuessLocationPage /></RequireAuth>} />
         
         <Route
           path="/edit-location/:id"
@@ -68,6 +77,20 @@ export function App() {
             </RequireAuth>
           }
         />
+ <Route
+          path="/admin"
+          element={
+            <RequireAdmin>
+              <AdminLayout />
+            </RequireAdmin>
+          }
+        >
+          <Route path="users" element={<UsersPage />} />
+          <Route path="users/:id" element={<UserDetailPage />} />
+          <Route path="locations" element={<LocationsPage />} />
+          <Route path="locations/:id" element={<LocationDetailPage />} />
+          <Route path="activity-log" element={<ActivityLogPage />} />
+        </Route>
 
         {/* fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

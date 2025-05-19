@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './home.module.css';
 import { API_BASE } from '../../config';
-
+import { useAuth } from "../../utils/useAuth";
 /* ── assets ─────────────────────────────────────────────── */
 import gradientLogo      from '../../assets/logo_gradient.png';
 import avatarPlaceholder from '../../assets/profile_white.png';
@@ -42,14 +42,14 @@ const HomePage: React.FC = () => {
   // Points/profile state
   const [points, setPoints] = useState<number>(0);
   const [profilePic, setProfilePic] = useState<string | null>(null);
-
+  //const [isAdmin, setIsAdmin] = useState(false);
   // User guesses (paginated)
   const [guesses, setGuesses] = useState<UserGuessDto[]>([]);
   const [guessesPage, setGuessesPage] = useState(1);
   const [hasMoreGuesses, setHasMoreGuesses] = useState(true);
   const [guessesLoading, setGuessesLoading] = useState(false);
   const [guessesLoadedOnce, setGuessesLoadedOnce] = useState(false);
-
+  const { isAdmin } = useAuth();
   // New locations (unchanged)
   const [newLocations, setNewLocations] = useState<LocationDto[]>([]);
   const [page, setPage] = useState(1);
@@ -74,6 +74,8 @@ useEffect(() => {
 }, [nav]);
 
 
+
+
   // --- Fetch profile points and profile pic exactly as LocationGuessPage does ---
   const fetchProfile = async () => {
     try {
@@ -83,7 +85,7 @@ useEffect(() => {
         { headers: authHeader() }
       ).then(r => r.ok ? r.json() : null);
       if (me) setProfilePic(me.profilePictureUrl ?? null);
-
+      //useAuth(.isAdmin);
       // Fetch points (from /api/Profile/wallet)
       const w = await fetch(
         `${API_BASE}/api/Profile/wallet`,
@@ -190,6 +192,11 @@ const loadLocations = async (p: number) => {
         </div>
 
         <nav className={styles.topbar__nav}>
+{isAdmin && (
+  <Link to="/admin" className={styles.topbar__link}>
+    Admin Panel
+  </Link>
+)}
           <Link to="/home"    className={styles.topbar__link}>Home</Link>
           <Link to="/profile" className={styles.topbar__link}>Profile settings</Link>
           <button

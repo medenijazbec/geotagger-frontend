@@ -1,8 +1,8 @@
-// Renders the admin control panel layout with navigation and nested routes
 import React from "react";
-import styles from "./ControlPanelPage.module.css";
+import styles from "./Admin.module.css";
 import { NavLink, Outlet } from "react-router-dom";
-const ControlPanelPage: React.FC = () => (
+
+const AdminLayout: React.FC = () => (
   <div className={styles.container}>
     <nav className={styles.nav}>
       <NavLink
@@ -14,19 +14,36 @@ const ControlPanelPage: React.FC = () => (
         Users
       </NavLink>
       <NavLink
-        to="/admin/auctions"
+        to="/admin/locations"
         className={({ isActive }) =>
           isActive ? `${styles.link} ${styles.active}` : styles.link
         }
       >
-        Auctions
+        Locations
+      </NavLink>
+
+      <NavLink
+        to="/admin/activity-log"
+        className={({ isActive }) =>
+          isActive ? `${styles.link} ${styles.active}` : styles.link
+        }
+      >
+        Activity Log
+      </NavLink>
+
+            {/* ---- Back to Home ---- */}
+      <NavLink
+        to="/home"
+        className={styles.backLink}
+        style={{ marginLeft: "1.5rem" }}
+      >
+        ← Back to Homepage
       </NavLink>
     </nav>
     <main className={styles.main}>
-      {/* Outlet renders the matched child route component */}
       <Outlet />
     </main>
   </div>
 );
 
-export default ControlPanelPage;
+export default AdminLayout;

@@ -33,7 +33,6 @@ const SigninPage: React.FC = () => {
 
   // Handle OAuth redirect after backend completes
   useEffect(() => {
-    // Example: /home?externalLogin=success&token=xxx
     const params = new URLSearchParams(location.search);
     const externalSuccess = params.get('externalLogin') === 'success';
     const token = params.get('token');

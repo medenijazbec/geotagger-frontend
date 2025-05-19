@@ -1,56 +1,280 @@
-/* toolbar & table styling */
+/* AdminPanel.module.css */
+/* Container layout */
+.adminPanelContainer {
+  max-width: 1280px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Topbar / nav tabs */
+.adminNav {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 1.5rem;
+}
+
+.adminNavLink {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #267b6f;
+  text-decoration: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px 999px 0 0;
+  background: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.adminNavLink:hover,
+.adminNavLinkActive {
+  background: #e5fcf3;
+  color: #16705e;
+  font-weight: 700;
+}
+
+/* Section title */
+.adminSectionTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #222;
+}
+
+.adminSectionSubtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+/* Toolbar (search/filter) */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
 .toolbar input {
-    padding: 0.5rem;
-    width: 300px;
-    margin-bottom: 1rem;
+  padding: 0.5rem;
+  width: 260px;
+  border-radius: 6px;
+  border: 1px solid #d0d0d0;
+  font-size: 1rem;
+}
+
+/* Table styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.25rem;
+  background: #fafbfb;
+}
+.table th,
+.table td {
+  border: 1px solid #e5e5e5;
+  padding: 0.65rem 0.8rem;
+  text-align: left;
+}
+.table th {
+  background: #e5fcf3;
+  color: #222;
+  font-weight: 600;
+}
+.table tr:nth-child(even) td {
+  background: #f6fefb;
+}
+
+/* Table avatar/image preview */
+.table .avatar,
+.table .imgPreview {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #e5fcf3;
+  margin-right: 0.6rem;
+}
+
+.table .actions {
+  display: flex;
+  gap: 0.6rem;
+}
+.table .actions button,
+.table .actions .editLink {
+  background: #fbff00;
+  border: none;
+  padding: 0.3rem 1rem;
+  border-radius: 14px;
+  font-weight: 600;
+  color: #212;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.table .actions button:hover,
+.table .actions .editLink:hover {
+  background: #e6e636;
+  color: #000;
+}
+.table .actions .danger {
+  background: #f08080;
+  color: #fff;
+}
+.table .actions .danger:hover {
+  background: #c93030;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+.pagination button {
+  padding: 0.3rem 0.7rem;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  background: #fff;
+  color: #267b6f;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pagination button:disabled {
+  background: #f2f2f2;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Activity log table - highlight action types */
+.activity-log-action {
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 0.15rem 0.7rem;
+  background: #e5fcf3;
+  color: #267b6f;
+  font-size: 0.95em;
+}
+.activity-log-action.click { background: #ffd700; color: #a56c00; }
+.activity-log-action.scroll { background: #e5fcf3; color: #267b6f; }
+.activity-log-action.added_value { background: #b2f0b2; color: #137513; }
+.activity-log-action.changed_value { background: #98d4f7; color: #005688; }
+.activity-log-action.removed_value { background: #ffcdd2; color: #c00; }
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .adminPanelContainer { padding: 0.5rem; }
+  .table th, .table td { padding: 0.4rem 0.5rem; font-size: 0.95em; }
+  .toolbar input { width: 100%; min-width: 120px; }
+}
+.nav {
+  display: flex;
+  gap: 2rem;                    
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 2rem;
+}
+
+.link {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #267b6f;
+  text-decoration: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 16px 16px 0 0;
+  background: none;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.01em;
+  position: relative;
+}
+
+.link:hover,
+.active {
+  background: #e5fcf3;
+  color: #147564;
+  font-weight: 600;
+  box-shadow: 0 6px 18px -9px #48e9c35c;
+}
+
+
+.active::after {
+  content: "";
+  display: block;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: #11d2a9;
+  margin-top: 5px;
+  width: 60%;
+  margin-left: 20%;
+}
+
+@media (max-width: 700px) {
+  .nav { gap: 1rem; }
+  .link { font-size: 0.97rem; padding: 0.6rem 1rem; }
+}.container {
+  padding: 0 2.5rem;           /* Horizontal breathing room */
+}
+
+.nav {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  padding: 0.7rem 2.5rem 0.5rem 2.5rem; /* Top, right, bottom, left */
+  border-bottom: 2px solid #eee;
+  margin-bottom: 2rem;
+  background: #f7f7f7;
+  border-radius: 0 0 16px 16px;
+}
+
+.link {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #267b6f;
+  text-decoration: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 16px 16px 0 0;
+  background: none;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.01em;
+  position: relative;
+}
+
+.link:hover,
+.active {
+  background: #e5fcf3;
+  color: #16705e;
+  font-weight: 700;
+}
+
+/* Responsive: less side padding on mobile */
+@media (max-width: 900px) {
+  .container,
+  .nav {
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
   }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-  }
-  
-  .table th,
-  .table td {
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    text-align: left;
-  }
-  
-  .pagination {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .pagination button {
-    padding: 0.25rem 0.5rem;
-    cursor: pointer;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    max-width: 400px;
-    margin-bottom: 2rem;
-  }
-  
-  .form input {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .formActions {
-    margin-top: 1rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .formActions button {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-  }
-  
+}.backLink {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #49566c;
+  text-decoration: none;
+  padding: 0.5rem 1.2rem;
+  margin-left: 1.2rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+  top: 0.5px;
+}
+.backLink:hover {
+  background: #dbeafe;
+  color: #003366;
+  text-decoration: underline;
+}

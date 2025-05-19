@@ -25,6 +25,7 @@ export const useAuth = () => {
   const isLoggedIn =
     !!token && !!claims.sub && (!claims.exp || claims.exp * 1000 > Date.now());
 
+  // Robustly flatten all role claims, de-dupe
   const rawRoles = [
     claims.role,
     claims.roles,

@@ -5,7 +5,7 @@ import { useAuth } from "../utils/useAuth";
 
 const RequireAdmin: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const { isLoggedIn, isAdmin } = useAuth();
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  if (!isLoggedIn) return <Navigate to="/signin" replace />;
   if (!isAdmin)    return <Navigate to="/" replace />;
   return children;
 };

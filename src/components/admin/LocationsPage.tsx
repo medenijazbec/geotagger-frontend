@@ -2,52 +2,51 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Admin.module.css";
 import { API_BASE } from "../../config";
-interface Auction {
-  auctionId: number;
+
+interface Location {
+  locationId: number;
   title: string;
+  uploaderName: string;
   createdAt: string;
+  isActive: boolean;
 }
 
-const AuctionsPage: React.FC = () => {
+const LocationsPage: React.FC = () => {
   const jwt = localStorage.getItem("token");
   const [search, setSearch] = useState("");
-  const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const loc = useLocation();
 
-  // Fetch auctions whenever search or page changes
   useEffect(() => {
     fetch(
-      `${API_BASE}/api/Admin/auctions?search=${encodeURIComponent(
+      `${API_BASE}/api/Admin/locations?search=${encodeURIComponent(
         search
       )}&page=${page}&pageSize=20`,
       { headers: { Authorization: `Bearer ${jwt}` } }
     )
       .then((r) => r.json())
-      .then((data: { total: number; items: Auction[] }) => {
-        // Update total count and auctions list from response
+      .then((data: { total: number; items: Location[] }) => {
         setTotal(data.total);
-        setAuctions(data.items);
+        setLocations(data.items);
       });
   }, [search, page, jwt]);
 
-  // Deletes an auction and updates local list on success
-  const deleteAuction = (id: number) => {
-    if (!confirm("Delete this auction?")) return;
-    fetch(`${API_BASE}/api/Admin/auctions/${id}`, {
+  const deleteLocation = (id: number) => {
+    if (!confirm("Delete this location?")) return;
+    fetch(`${API_BASE}/api/Admin/locations/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${jwt}` },
     }).then((r) => {
-      if (r.ok) setAuctions((a) => a.filter((x) => x.auctionId !== id));
+      if (r.ok) setLocations((a) => a.filter((x) => x.locationId !== id));
     });
   };
 
   return (
     <div>
-      <h1>Manage Auctions</h1>
+      <h1>Manage Locations</h1>
       <div className={styles.toolbar}>
-        {/* Search input resets page to 1 on change */}
         <input
           placeholder="Search by title/description…"
           value={search}
@@ -62,23 +61,24 @@ const AuctionsPage: React.FC = () => {
         <thead>
           <tr>
             <th>Title</th>
+            <th>Uploader</th>
             <th>Created</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {auctions.map((a) => (
-            <tr key={a.auctionId}>
-              <td>{a.title}</td>
-              {/* Format timestamp to locale string */}
-              <td>{new Date(a.createdAt).toLocaleString()}</td>
+          {locations.map((loc) => (
+            <tr key={loc.locationId}>
               <td>
-                {/* Link to edit page, preserving previous location */}
-                <Link to={`${a.auctionId}`} state={{ from: loc }}>
-                  Edit
-                </Link>{" "}
-                {/* Trigger delete action on click */}
-                <button onClick={() => deleteAuction(a.auctionId)}>
+                <Link to={`/admin/locations/${loc.locationId}`}>{loc.title}</Link>
+              </td>
+              <td>{loc.uploaderName}</td>
+              <td>{new Date(loc.createdAt).toLocaleString()}</td>
+              <td>{loc.isActive ? "Active" : "Inactive"}</td>
+              <td>
+                <Link to={`/admin/locations/${loc.locationId}`}>Edit</Link>{" "}
+                <button onClick={() => deleteLocation(loc.locationId)}>
                   Delete
                 </button>
               </td>
@@ -86,17 +86,13 @@ const AuctionsPage: React.FC = () => {
           ))}
         </tbody>
       </table>
-
       <div className={styles.pagination}>
-        {/* Display current page and total pages */}
         Page {page} of {Math.ceil(total / 20)}
-        {/* Previous page button, prevents going below 1 */}
         <button onClick={() => setPage((p) => Math.max(1, p - 1))}>‹</button>
-        {/* Next page button increments page */}
         <button onClick={() => setPage((p) => p + 1)}>›</button>
       </div>
     </div>
   );
 };
 
-export default AuctionsPage;
+export default LocationsPage;

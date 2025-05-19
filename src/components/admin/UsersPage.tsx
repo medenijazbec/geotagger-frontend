@@ -1,8 +1,8 @@
-// src/components/admin/UsersPage.tsx
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Admin.module.css";
 import { API_BASE } from "../../config";
+
 interface User {
   id: string;
   email: string;
@@ -19,7 +19,6 @@ const UsersPage: React.FC = () => {
   const [total, setTotal] = useState(0);
   const loc = useLocation();
 
-  // Fetch users whenever search or page changes
   useEffect(() => {
     fetch(
       `${API_BASE}/api/Admin/users?search=${encodeURIComponent(
@@ -29,19 +28,18 @@ const UsersPage: React.FC = () => {
     )
       .then((r) => r.json())
       .then((data: { total: number; items: User[] }) => {
-        setTotal(data.total); // Update total count
-        setUsers(data.items); // Update list of users
+        setTotal(data.total);
+        setUsers(data.items);
       });
   }, [search, page, jwt]);
 
-  // Deletes a user and updates UI on success
   const deleteUser = (id: string) => {
-    if (!confirm("Really delete this user?")) return; // Confirm action
+    if (!confirm("Really delete this user?")) return;
     fetch(`${API_BASE}/api/Admin/users/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${jwt}` },
     }).then((r) => {
-      if (r.ok) setUsers((u) => u.filter((x) => x.id !== id)); // Remove deleted user from state
+      if (r.ok) setUsers((u) => u.filter((x) => x.id !== id));
     });
   };
 
@@ -49,7 +47,6 @@ const UsersPage: React.FC = () => {
     <div>
       <h1>Manage Users</h1>
       <div className={styles.toolbar}>
-        {/* Search input resets page to 1 on change */}
         <input
           placeholder="Search by name or email…"
           value={search}
@@ -59,12 +56,12 @@ const UsersPage: React.FC = () => {
           }}
         />
       </div>
-
       <table className={styles.table}>
         <thead>
           <tr>
             <th>Email</th>
             <th>Name</th>
+            <th>Profile</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -72,16 +69,28 @@ const UsersPage: React.FC = () => {
           {users.map((u) => (
             <tr key={u.id}>
               <td>
-                {/* Link to edit user, preserving previous location */}
                 <Link to={`/admin/users/${u.id}`} state={{ from: loc }}>
                   {u.email}
                 </Link>
               </td>
-              {/* Edit and Delete actions */}
               <td>
                 <Link to={`/admin/users/${u.id}`} state={{ from: loc }}>
                   {u.firstName} {u.lastName}
                 </Link>
+              </td>
+              <td>
+                {u.profilePictureUrl && (
+                  <img
+                    src={u.profilePictureUrl}
+                    alt="Profile"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
               </td>
               <td>
                 <Link to={`/admin/users/${u.id}`} state={{ from: loc }}>
@@ -93,9 +102,7 @@ const UsersPage: React.FC = () => {
           ))}
         </tbody>
       </table>
-
       <div className={styles.pagination}>
-        {/* Pagination controls */}
         Page {page} of {Math.ceil(total / 20)}
         <button onClick={() => setPage((p) => Math.max(1, p - 1))}>‹</button>
         <button onClick={() => setPage((p) => p + 1)}>›</button>

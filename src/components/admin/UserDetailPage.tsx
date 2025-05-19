@@ -1,12 +1,12 @@
-// src/components/admin/UserDetailPage.tsx
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import styles from "./Admin.module.css";
 import { API_BASE } from "../../config";
-interface AuctionSummary {
-  auctionId: number;
+
+interface LocationSummary {
+  locationId: number;
   title: string;
-  auctionState: string;
+  isActive: boolean;
 }
 
 interface UserDetail {
@@ -15,7 +15,7 @@ interface UserDetail {
   firstName: string;
   lastName: string;
   profilePictureUrl: string;
-  auctions: AuctionSummary[];
+  locations: LocationSummary[];
 }
 
 const UserDetailPage: React.FC = () => {
@@ -23,9 +23,7 @@ const UserDetailPage: React.FC = () => {
   const jwt = localStorage.getItem("token");
   const nav = useNavigate();
 
-  // Holds fetched user data
   const [user, setUser] = useState<UserDetail | null>(null);
-  // Form state for editing user fields
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -33,14 +31,12 @@ const UserDetailPage: React.FC = () => {
     profilePictureUrl: "",
   });
 
-  // Fetches user details on component mount or when id/jwt change
   useEffect(() => {
     fetch(`${API_BASE}/api/Admin/users/${id}`, {
       headers: { Authorization: `Bearer ${jwt}` },
     })
       .then((r) => r.json())
       .then((u: UserDetail) => {
-        // Populate user state and prefill form fields
         setUser(u);
         setForm({
           firstName: u.firstName,
@@ -51,7 +47,6 @@ const UserDetailPage: React.FC = () => {
       });
   }, [id, jwt]);
 
-  // Saves updated user data to the API
   const save = () => {
     fetch(`${API_BASE}/api/Admin/users/${id}`, {
       method: "PUT",
@@ -63,7 +58,6 @@ const UserDetailPage: React.FC = () => {
     }).then((r) => {
       if (r.ok) {
         alert("Saved!");
-        // Re-fetch user to get updated data
         fetch(`${API_BASE}/api/Admin/users/${id}`, {
           headers: { Authorization: `Bearer ${jwt}` },
         })
@@ -75,23 +69,21 @@ const UserDetailPage: React.FC = () => {
     });
   };
 
-  // Deletes an auction belonging to the user and updates UI
-  const deleteAuction = (auctionId: number) => {
-    if (!confirm("Delete this auction?")) return;
-    fetch(`${API_BASE}/api/Admin/auctions/${auctionId}`, {
+  const deleteLocation = (locationId: number) => {
+    if (!confirm("Delete this location?")) return;
+    fetch(`${API_BASE}/api/Admin/locations/${locationId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${jwt}` },
     }).then((r) => {
       if (r.ok && user) {
-        // Remove deleted auction from user.auctions
         setUser({
           ...user,
-          auctions: user.auctions.filter((a) => a.auctionId !== auctionId),
+          locations: user.locations.filter((a) => a.locationId !== locationId),
         });
       }
     });
   };
-  // Show loading state
+
   if (!user) return <p>Loading…</p>;
 
   return (
@@ -127,9 +119,9 @@ const UserDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <h3>This user’s auctions</h3>
-      {user.auctions.length === 0 ? (
-        <p>No auctions created by this user.</p>
+      <h3>This user’s locations</h3>
+      {user.locations.length === 0 ? (
+        <p>No locations uploaded by this user.</p>
       ) : (
         <table className={styles.table}>
           <thead>
@@ -140,15 +132,15 @@ const UserDetailPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {user.auctions.map((a) => (
-              <tr key={a.auctionId}>
+            {user.locations.map((loc) => (
+              <tr key={loc.locationId}>
                 <td>
-                  <Link to={`/admin/auctions/${a.auctionId}`}>{a.title}</Link>
+                  <Link to={`/admin/locations/${loc.locationId}`}>{loc.title}</Link>
                 </td>
-                <td>{a.auctionState}</td>
+                <td>{loc.isActive ? "Active" : "Inactive"}</td>
                 <td>
-                  <Link to={`/admin/auctions/${a.auctionId}`}>Edit</Link>{" "}
-                  <button onClick={() => deleteAuction(a.auctionId)}>
+                  <Link to={`/admin/locations/${loc.locationId}`}>Edit</Link>{" "}
+                  <button onClick={() => deleteLocation(loc.locationId)}>
                     Delete
                   </button>
                 </td>

@@ -1,29 +1,28 @@
 // src/components/RequireAuth.tsx
-import React, { JSX } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import React, { JSX, useEffect } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 const RequireAuth: React.FC<{ children: JSX.Element }> = ({ children }) => {
-  const loc  = useLocation();
-  const nav  = useNavigate();
+  const loc = useLocation();
+  const nav = useNavigate();
+  const token = localStorage.getItem("token");
 
-  /* ───────── 1.  Bootstrap from ?token=… (OAuth redirect) ───────── */
-  const params     = new URLSearchParams(loc.search);
-  const urlToken   = params.get('token');
-  if (urlToken) {
-    localStorage.setItem('token', urlToken);
+  // Handle OAuth redirect with ?token=...
+  useEffect(() => {
+    const params = new URLSearchParams(loc.search);
+    const urlToken = params.get("token");
+    if (urlToken) {
+      localStorage.setItem("token", urlToken);
+      params.delete("token");
+      params.delete("externalLogin");
+      const cleanUrl =
+        loc.pathname + (params.toString() ? "?" + params.toString() : "");
+      nav(cleanUrl, { replace: true });
+    }
+  }, [loc, nav]);
 
-    /* Strip the query-string so it won’t be parsed again */
-    params.delete('token');
-    params.delete('externalLogin');
-    const cleanUrl =
-      loc.pathname + (params.toString() ? '?' + params.toString() : '');
-    nav(cleanUrl, { replace: true });
-  }
-
-  /* ───────── 2.  Normal auth guard ───────── */
-  const token = localStorage.getItem('token');
+  // Guard
   if (!token) {
-    /* remember where the user wanted to go */
     return <Navigate to="/signin" state={{ from: loc }} replace />;
   }
 
