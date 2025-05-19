@@ -1,8 +1,9 @@
 // src/components/signUpPage/singUpPage.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './signup.module.css';
 import { API_BASE } from '../../config';
+import { logUserAction } from "../../utils/logUserAction";
 
 /* ── assets ── */
 import gradientLogo       from '../../assets/logo_gradient.png';
@@ -40,6 +41,19 @@ const SignupPage: React.FC = () => {
   const vPwdMatch   = password === password2;
 
   const formValid   = vEmail && vFirst && vLast && vPwd && vPwdMatch;
+
+useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
 
 /* ─────────────────────────────────────────────────────────── */
 /*  SUBMIT – create account → wait for confirm-mail           */
@@ -139,7 +153,15 @@ const handleSubmit = async (e: React.FormEvent) => {
               type="email"
               placeholder="hey@geotagger.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={e => {
+  logUserAction({
+    actionType: "changed_value",
+    componentType: "textbox",
+    newValue: e.target.value,
+    url: window.location.pathname
+  });
+  setEmail(e.target.value);
+}}
               required
             />
             {!vEmail && email && (
@@ -151,14 +173,22 @@ const handleSubmit = async (e: React.FormEvent) => {
 <div className={styles['field-group']}>
   <div className={`${styles.field} ${styles.half}`}>
     <label>First name</label>
-    <input
-      type="text"
-      placeholder="John"
-      value={firstName}
-      onChange={e => setFirstName(e.target.value)}
-      required
-      aria-invalid={!vFirst && !!firstName}
-    />
+<input
+  type="text"
+  placeholder="John"
+  value={firstName}
+  onChange={e => {
+    logUserAction({
+      actionType: "changed_value",
+      componentType: "textbox",
+      newValue: e.target.value,
+      url: window.location.pathname
+    });
+    setFirstName(e.target.value);
+  }}
+  required
+  aria-invalid={!vFirst && !!firstName}
+/>
     {!vFirst && firstName && (
       <small style={{ color: 'red' }}>2 – 50 characters</small>
     )}
@@ -168,14 +198,22 @@ const handleSubmit = async (e: React.FormEvent) => {
   </div>
   <div className={`${styles.field} ${styles.half}`}>
     <label>Last name</label>
-    <input
-      type="text"
-      placeholder="Doe"
-      value={lastName}
-      onChange={e => setLastName(e.target.value)}
-      required
-      aria-invalid={!vLast && !!lastName}
-    />
+<input
+  type="text"
+  placeholder="Doe"
+  value={lastName}
+  onChange={e => {
+    logUserAction({
+      actionType: "changed_value",
+      componentType: "textbox",
+      newValue: e.target.value,
+      url: window.location.pathname
+    });
+    setLastName(e.target.value);
+  }}
+  required
+  aria-invalid={!vLast && !!lastName}
+/>
     {!vLast && lastName && (
       <small style={{ color: 'red' }}>2 – 50 characters</small>
     )}
@@ -190,13 +228,21 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className={styles.field}>
             <label>Password</label>
             <div className={styles.inputIcon}>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-              />
+<input
+  type="password"
+  placeholder="••••••••"
+  value={password}
+  onChange={e => {
+    logUserAction({
+      actionType: "changed_value",
+      componentType: "textbox",
+      newValue: e.target.value,
+      url: window.location.pathname
+    });
+    setPassword(e.target.value);
+  }}
+  required
+/>
               <span className={`${styles.icon} ${styles['icon--eye']}`} />
             </div>
             {!vPwd && password && (
@@ -210,13 +256,21 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className={styles.field}>
             <label>Repeat password</label>
             <div className={styles.inputIcon}>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password2}
-                onChange={e => setPassword2(e.target.value)}
-                required
-              />
+<input
+  type="password"
+  placeholder="••••••••"
+  value={password2}
+  onChange={e => {
+    logUserAction({
+      actionType: "changed_value",
+      componentType: "textbox",
+      newValue: e.target.value,
+      url: window.location.pathname
+    });
+    setPassword2(e.target.value);
+  }}
+  required
+/>
               <span className={`${styles.icon} ${styles['icon--eye']}`} />
             </div>
             {!vPwdMatch && password2 && (
@@ -224,13 +278,19 @@ const handleSubmit = async (e: React.FormEvent) => {
             )}
           </div>
 
-          <button
-            type="submit"
-            className={`${styles.btn} ${styles['btn--primary']} ${styles['btn--full']}`}
-            disabled={!formValid}
-          >
-            Sign up
-          </button>
+<button
+  type="submit"
+  className={`${styles.btn} ${styles['btn--primary']} ${styles['btn--full']}`}
+  disabled={!formValid}
+  onClick={e => logUserAction({
+    actionType: "click",
+    componentType: "button",
+    url: window.location.pathname
+  })}
+>
+  Sign up
+</button>
+
 
           <p className={styles.signup__footerText}>
             Already have an account?

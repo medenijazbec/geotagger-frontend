@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_BASE } from "../../config";
 import styles from "./resetPasswordPage.module.css";
+import { logUserAction } from "../../utils/logUserAction";
 
 const pwdRx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,100}$/;
 
@@ -24,6 +25,19 @@ const ResetPasswordPage: React.FC = () => {
   const [pwdTouched, setPwdTouched] = useState(false);
   const [pwd2Touched, setPwd2Touched] = useState(false);
 
+useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+  
   // Step 1: Request reset link
   const sendResetEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,28 +102,40 @@ const ResetPasswordPage: React.FC = () => {
             <p style={{ color: resetMsg.type === "err" ? "red" : "green" }}>{resetMsg.text}</p>
           )}
           <label>New password</label>
-          <input
-            type="password"
-            value={pwd1}
-            onChange={e => {
-              setPwd1(e.target.value);
-              setPwdTouched(true);
-            }}
-            onBlur={() => setPwdTouched(true)}
-            required
-            autoFocus
-          />
+<input
+  type="password"
+  value={pwd1}
+  onChange={e => {
+    logUserAction({
+      actionType: "changed_value",
+      componentType: "textbox",
+      newValue: e.target.value,
+      url: window.location.pathname
+    });
+    setPwd1(e.target.value);
+    setPwdTouched(true);
+  }}
+  onBlur={() => setPwdTouched(true)}
+  required
+  autoFocus
+/>
           <label>Repeat new password</label>
-          <input
-            type="password"
-            value={pwd2}
-            onChange={e => {
-              setPwd2(e.target.value);
-              setPwd2Touched(true);
-            }}
-            onBlur={() => setPwd2Touched(true)}
-            required
-          />
+<input
+  type="password"
+  value={pwd2}
+  onChange={e => {
+    logUserAction({
+      actionType: "changed_value",
+      componentType: "textbox",
+      newValue: e.target.value,
+      url: window.location.pathname
+    });
+    setPwd2(e.target.value);
+    setPwd2Touched(true);
+  }}
+  onBlur={() => setPwd2Touched(true)}
+  required
+/>
           {showPwdValidation && (
             <p style={{ color: "red" }}>
               8+ chars, 1 upper, 1 lower, 1 digit, 1 symbol, and both must match.
@@ -143,7 +169,15 @@ const ResetPasswordPage: React.FC = () => {
           type="email"
           required
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={e => {
+  logUserAction({
+    actionType: "changed_value",
+    componentType: "textbox",
+    newValue: e.target.value,
+    url: window.location.pathname
+  });
+  setEmail(e.target.value);
+}}
           autoFocus
         />
         <button

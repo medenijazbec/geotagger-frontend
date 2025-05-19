@@ -7,6 +7,7 @@ import Cropper, { Area } from 'react-easy-crop';
 import styles from './profilePage.module.css';
 import { API_BASE } from '../../config';
 import getCroppedImg from '../../utils/getCroppedImg';
+import { logUserAction } from "../../utils/logUserAction";
 
 /* ─ assets ─ */
 import gradientLogo      from '../../assets/logo_gradient.png';
@@ -99,6 +100,19 @@ const ProfilePage: React.FC = () => {
   const [areaPx,      setAreaPx]      = useState<Area | null>(null);
   const cropWrapRef = useRef<HTMLDivElement>(null);
   const CROP = 180;
+
+useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
 
   // ─── FETCH PROFILE (for points, pfp, info) ────────────────────────────
   const fetchProfile = async () => {
@@ -568,11 +582,20 @@ const ProfilePage: React.FC = () => {
             <input
               type="email"
               value={mail}
-              readOnly={isExternal}               /* lock */
-              onChange={e => setMail(e.target.value)}
+              readOnly={isExternal}
+              onChange={e => {
+                logUserAction({
+                  actionType: "changed_value",
+                  componentType: "textbox",
+                  newValue: e.target.value,
+                  url: window.location.pathname
+                });
+                setMail(e.target.value);
+              }}
               required
               style={isExternal ? { cursor:"not-allowed", opacity:.55 } : {}}
             />
+
           </div>
           <div className={styles.row}>
             <div className={styles.field}>
@@ -580,7 +603,15 @@ const ProfilePage: React.FC = () => {
               <input
                 type="text"
                 value={first}
-                onChange={e => setFirst(e.target.value)}
+                onChange={e => {
+  logUserAction({
+    actionType: "changed_value",
+    componentType: "textbox",
+    newValue: e.target.value,
+    url: window.location.pathname
+  });
+  setFirst(e.target.value);
+}}
                 minLength={2}
                 required
               />
@@ -590,7 +621,15 @@ const ProfilePage: React.FC = () => {
               <input
                 type="text"
                 value={last}
-                onChange={e => setLast(e.target.value)}
+                onChange={e => {
+  logUserAction({
+    actionType: "changed_value",
+    componentType: "textbox",
+    newValue: e.target.value,
+    url: window.location.pathname
+  });
+  setLast(e.target.value);
+}}
                 minLength={2}
                 required
               />

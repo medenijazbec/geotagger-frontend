@@ -14,6 +14,7 @@ import plusIcon          from '../../assets/plus.png';
 import placeholder1      from '../../assets/placeholder_places1.png';
 import placeholder2      from '../../assets/placeholder_places2.png';
 import placeholder3      from '../../assets/placeholder_places3.png';
+import { logUserAction } from "../../utils/logUserAction";
 
 const PLACEHOLDERS = [placeholder1, placeholder2, placeholder3];
 
@@ -53,6 +54,20 @@ const HomePage: React.FC = () => {
   // New locations (unchanged)
   const [newLocations, setNewLocations] = useState<LocationDto[]>([]);
   const [page, setPage] = useState(1);
+
+useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+
 
  // --- Handle token from OAuth redirect ---
   useEffect(() => {
@@ -191,39 +206,96 @@ const loadLocations = async (p: number) => {
 </span>
         </div>
 
-        <nav className={styles.topbar__nav}>
-{isAdmin && (
-  <Link to="/admin" className={styles.topbar__link}>
-    Admin Panel
+<nav className={styles.topbar__nav}>
+  {isAdmin && (
+    <Link
+      to="/admin"
+      className={styles.topbar__link}
+      onClick={() => {
+        logUserAction({
+          actionType: "click",
+          componentType: "link",
+          newValue: "admin_panel",
+          url: window.location.pathname,
+        });
+      }}
+    >
+      Admin Panel
+    </Link>
+  )}
+  <Link
+    to="/home"
+    className={styles.topbar__link}
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "link",
+        newValue: "home",
+        url: window.location.pathname,
+      });
+    }}
+  >
+    Home
   </Link>
-)}
-          <Link to="/home"    className={styles.topbar__link}>Home</Link>
-          <Link to="/profile" className={styles.topbar__link}>Profile settings</Link>
-          <button
-            onClick={handleLogout}
-            className={styles.topbar__link}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-          >
-            Logout
-          </button>
+  <Link
+    to="/profile"
+    className={styles.topbar__link}
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "link",
+        newValue: "profile_settings",
+        url: window.location.pathname,
+      });
+    }}
+  >
+    Profile settings
+  </Link>
+  <button
+    onClick={e => {
+      logUserAction({
+        actionType: "click",
+        componentType: "button",
+        newValue: "logout",
+        url: window.location.pathname,
+      });
+      handleLogout();
+    }}
+    className={styles.topbar__link}
+    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+  >
+    Logout
+  </button>
 
-          <div className={styles.topbar__points}>
-            <div className={styles.points__avatar}>
-              <img
-                src={ profilePic
-                  ? `${API_BASE}${profilePic}`
-                  : avatarPlaceholder }
-                alt="Avatar"
-                className={styles.points__icon}
-              />
-            </div>
-            <span className={styles.points__value}>{points}</span>
-          </div>
+  <div className={styles.topbar__points}>
+    <div className={styles.points__avatar}>
+      <img
+        src={profilePic
+          ? `${API_BASE}${profilePic}`
+          : avatarPlaceholder}
+        alt="Avatar"
+        className={styles.points__icon}
+      />
+    </div>
+    <span className={styles.points__value}>{points}</span>
+  </div>
 
-          <button onClick={handleAddLocation} className={`${styles.btn} ${styles['btn--icon']}`}>
-            <img src={plusIcon} alt="Add"/>
-          </button>
-        </nav>
+  <button
+    onClick={e => {
+      logUserAction({
+        actionType: "click",
+        componentType: "button",
+        newValue: "add_location",
+        url: window.location.pathname,
+      });
+      handleAddLocation();
+    }}
+    className={`${styles.btn} ${styles['btn--icon']}`}
+  >
+    <img src={plusIcon} alt="Add" />
+  </button>
+</nav>
+
       </header>
 
       {/* ── MAIN ──────────────────────────────────────── */}
@@ -256,8 +328,16 @@ const loadLocations = async (p: number) => {
             key={g.locationId ?? i}
             className={styles.card}
             style={{ backgroundImage: `url(${g.imageUrl})` }}
-            onClick={() => nav(`/guess-location/${g.locationId}`)}
-          >
+            onClick={() => {
+            logUserAction({
+              actionType: "click",
+              componentType: "card",
+              newValue: g.locationId?.toString(),
+              url: window.location.pathname
+            });
+            nav(`/guess-location/${g.locationId}`);
+          }}
+                    >
             <span className={styles.card__label}>{g.errorMeters} m</span>
           </div>
         ))}
@@ -290,7 +370,18 @@ const loadLocations = async (p: number) => {
                 key={loc.locationId}
                 className={styles.card}
                 style={{ backgroundImage: `url(${loc.imageUrl})` }}
-                onClick={() => loc.locationId > 0 && nav(`/guess-location/${loc.locationId}`)}
+                onClick={() => {
+  if (loc.locationId > 0) {
+    logUserAction({
+      actionType: "click",
+      componentType: "card",
+      newValue: loc.locationId.toString(),
+      url: window.location.pathname
+    });
+    nav(`/guess-location/${loc.locationId}`);
+  }
+}}
+
               />
             ))}
           </div>

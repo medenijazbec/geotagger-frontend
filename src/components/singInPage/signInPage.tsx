@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import styles from './signin.module.css';
 import { API_BASE } from '../../config';
+import { logUserAction } from "../../utils/logUserAction";
 
 // static asset imports
 import gradientLogo       from '../../assets/logo_gradient.png';
@@ -29,7 +30,17 @@ const SigninPage: React.FC = () => {
   const [msg, setMsg]           = useState<Msg>(null);
 
   const [email, setEmail] = useState(() => location.state?.email || "");
-
+useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
   // Handle OAuth redirect after backend completes
   useEffect(() => {
@@ -144,32 +155,58 @@ const SigninPage: React.FC = () => {
               placeholder="example@geotagger.com"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => {
+  logUserAction({
+    actionType: "changed_value",
+    componentType: "textbox",
+    newValue: e.target.value,
+    url: window.location.pathname
+  });
+  setEmail(e.target.value);
+}}
             />
           </div>
 
           <div className={styles.field}>
             <label htmlFor="password">Password</label>
             <div className={styles['input-icon']}>
-              <input
-                type="password"
-                id="password"
-                placeholder="•••••••••••••••"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+<input
+  type="password"
+  id="password"
+  placeholder="•••••••••••••••"
+  required
+  value={password}
+  onChange={e => {
+    logUserAction({
+      actionType: "changed_value",
+      componentType: "textbox",
+      newValue: e.target.value,
+      url: window.location.pathname
+    });
+    setPassword(e.target.value);
+  }}
+/>
+
               <span className={`${styles.icon} ${styles['icon--eye']}`}></span>
             </div>
           </div>
           <p className={styles['signup__footer-text']}>
-          <span
-            className={styles['link--secondary']}
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/reset-password", { state: { email } })}
-          >
-            Forgot password?
-          </span>
+<span
+  className={styles['link--secondary']}
+  style={{ cursor: "pointer" }}
+  onClick={() => {
+    logUserAction({
+      actionType: "click",
+      componentType: "link",
+      newValue: "forgot_password",
+      url: window.location.pathname
+    });
+    navigate("/reset-password", { state: { email } });
+  }}
+>
+  Forgot password?
+</span>
+
 
           </p>
 
@@ -181,23 +218,40 @@ const SigninPage: React.FC = () => {
             Sign in
           </button>
 
-          <button
-            type="button"
-            className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--google']}`}
-            onClick={handleGoogle}
-          >
-            <img src={googleIcon} alt="" className={styles.social__icon} />
-            Sign in with Google
-          </button>
+<button
+  type="button"
+  className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--google']}`}
+  onClick={() => {
+    logUserAction({
+      actionType: "click",
+      componentType: "button",
+      newValue: "signin_google",
+      url: window.location.pathname
+    });
+    handleGoogle();
+  }}
+>
+  <img src={googleIcon} alt="" className={styles.social__icon} />
+  Sign in with Google
+</button>
 
-          <button
-            type="button"
-            className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--facebook']}`}
-            onClick={handleFacebook}
-          >
-            <img src={facebookIcon} alt="" className={styles.social__icon} />
-            Sign in with Facebook
-          </button>
+<button
+  type="button"
+  className={`${styles.btn} ${styles['btn--outline']} ${styles['btn--full']} ${styles.social} ${styles['social--facebook']}`}
+  onClick={() => {
+    logUserAction({
+      actionType: "click",
+      componentType: "button",
+      newValue: "signin_facebook",
+      url: window.location.pathname
+    });
+    handleFacebook();
+  }}
+>
+  <img src={facebookIcon} alt="" className={styles.social__icon} />
+  Sign in with Facebook
+</button>
+
 
           <p className={styles['signup__footer-text']}>
             Do you want to create an account?

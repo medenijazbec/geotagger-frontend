@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './locationGuess.module.css';
 import { API_BASE } from '../../config';
+import { logUserAction } from "../../utils/logUserAction";
 
 /* ─ assets ─ */
 import logoGradient from '../../assets/logo_gradient.png';
@@ -69,11 +70,18 @@ const haversine = (
 
 const GuessPicker: React.FC<{ onPick:(lat:number,lon:number)=>void }> =
   ({ onPick }) => {
-    useMapEvents({
-      dblclick(e: LeafletMouseEvent) {
-        onPick(e.latlng.lat, e.latlng.lng);
-      },
+useMapEvents({
+  dblclick(e: LeafletMouseEvent) {
+    logUserAction({
+      actionType: "click",
+      componentType: "map",
+      newValue: `${e.latlng.lat},${e.latlng.lng}`,
+      url: window.location.pathname
     });
+    onPick(e.latlng.lat, e.latlng.lng);
+  },
+});
+
     return null;
   };
 
@@ -92,6 +100,20 @@ const LocationGuessPage: React.FC = () => {
 const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   //this causes the leaderboard to re-fetch
   const [refreshKey, setRefreshKey] = useState(0);
+
+useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+
 
 useEffect(() => {
   fetch(`${API_BASE}/api/Locations/${id}`)
@@ -236,7 +258,18 @@ useEffect(() => {
             </div>
           )}
 
-          <form className={styles['guess-form']} onSubmit={submit}>
+              <form
+                className={styles['guess-form']}
+                onSubmit={e => {
+                  logUserAction({
+                    actionType: "click",
+                    componentType: "form",
+                    url: window.location.pathname
+                  });
+                  submit(e);
+                }}
+              >
+
             <div className={styles['guess-form__group']}>
               <label htmlFor="g">Guessed location</label>
               <input

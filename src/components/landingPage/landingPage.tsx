@@ -7,6 +7,7 @@ import styles from './landing.module.css';
 import logoGradient from '../../assets/logo_gradient.png';
 import worldMapImg from '../../assets/worldmap.png';
 import padlockPng from '../../assets/padlock.png';
+import { logUserAction } from "../../utils/logUserAction";
 
 interface Location {
   locationId: number;
@@ -24,6 +25,19 @@ const LandingPage: React.FC = () => {
   // Fetch 3 demo locations
   const [locations, setLocations] = useState<Location[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+
+useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
 useEffect(() => {
   fetch('/api/Locations?page=1&pageSize=15')
@@ -65,7 +79,14 @@ useEffect(() => {
 <div
   key={loc.locationId}
   className={styles.demo__card}
-  onClick={goSignin}
+  onClick={() => {
+  logUserAction({
+    actionType: "click",
+    componentType: "card",
+    url: window.location.pathname
+  });
+  goSignin();
+}}
   title={loc.title}
 >
   <div
@@ -110,13 +131,38 @@ useEffect(() => {
 
         </div>
 
-        <nav className={styles.nav}>
-          <Link to="/signin" className={styles.nav__link}>Sign in</Link>
-          <span className={styles.nav__sep}>or</span>
-          <Link to="/signup" className={`${styles.btn} ${styles['btn--primary']}`}>
-            Sign up
-          </Link>
-        </nav>
+<nav className={styles.nav}>
+  <Link
+    to="/signin"
+    className={styles.nav__link}
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "link",
+        newValue: "sign_in",
+        url: window.location.pathname,
+      });
+    }}
+  >
+    Sign in
+  </Link>
+  <span className={styles.nav__sep}>or</span>
+  <Link
+    to="/signup"
+    className={`${styles.btn} ${styles['btn--primary']}`}
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "link",
+        newValue: "sign_up",
+        url: window.location.pathname,
+      });
+    }}
+  >
+    Sign up
+  </Link>
+</nav>
+
       </header>
 
       {/* ───────────── MAIN ───────────── */}

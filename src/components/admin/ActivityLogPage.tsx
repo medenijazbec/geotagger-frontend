@@ -5,13 +5,15 @@ import { API_BASE } from "../../config";
 interface ActivityLog {
   actionId: number;
   userId: string;
+  userEmail?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   actionType: string;
   componentType: string | null;
   newValue: string | null;
   url: string;
   actionTimestamp: string;
 }
-
 const ActivityLogPage: React.FC = () => {
   const jwt = localStorage.getItem("token");
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -21,13 +23,11 @@ const ActivityLogPage: React.FC = () => {
     fetch(`${API_BASE}/api/Admin/activity-log`, {
       headers: { Authorization: `Bearer ${jwt}` },
     })
-.then((r) => r.json())
-.then((data: { items: ActivityLog[] }) => {
-  setLogs(data.items ?? []);
-  setLoading(false);
-});
-
-
+      .then((r) => r.json())
+      .then((data: { items: ActivityLog[] }) => {
+        setLogs(data.items ?? []);
+        setLoading(false);
+      });
   }, [jwt]);
 
   if (loading) return <div className={styles.message}>Loading…</div>;
@@ -44,7 +44,10 @@ const ActivityLogPage: React.FC = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>User</th>
+              <th>Email</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>UserId</th>
               <th>Date/Time</th>
               <th>Action</th>
               <th>Component type</th>
@@ -55,6 +58,9 @@ const ActivityLogPage: React.FC = () => {
           <tbody>
             {logs.map((log) => (
               <tr key={log.actionId}>
+                <td>{log.userEmail || "/"}</td>
+                <td>{log.firstName || "/"}</td>
+                <td>{log.lastName || "/"}</td>
                 <td>{log.userId}</td>
                 <td>{new Date(log.actionTimestamp).toLocaleString()}</td>
                 <td>{log.actionType}</td>

@@ -3,6 +3,8 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styles from './location-edit.module.css';
 import { API_BASE } from '../../config';
+import { logUserAction } from "../../utils/logUserAction";
+
 
 // static asset imports:
 import gradientLogo      from '../../assets/logo_gradient.png';
@@ -35,6 +37,19 @@ const EditLocationPage: React.FC = () => {
   const [location,   setLocation]   = useState<LocationDto|null>(null);
   const [preview,    setPreview]    = useState<string>('');
   const [previewFile,setPreviewFile]= useState<File|null>(null);
+
+  useEffect(() => {
+  const handleScroll = () => {
+    logUserAction({
+      actionType: "scroll",
+      componentType: null,
+      url: window.location.pathname
+    });
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
 
   // load profile + wallet + this location
   useEffect(() => {
@@ -122,32 +137,76 @@ const EditLocationPage: React.FC = () => {
         </div>
 
         <nav className={styles.topbar__nav}>
-          <Link to="/home"    className={styles.topbar__link}>Home</Link>
-          <Link to="/profile" className={styles.topbar__link}>Profile settings</Link>
-          <button
-            onClick={() => { localStorage.removeItem('token'); nav('/signin'); }}
-            className={styles.topbar__link}
-          >
-            Logout
-          </button>
+  <Link
+    to="/home"
+    className={styles.topbar__link}
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "link",
+        newValue: "home",
+        url: window.location.pathname,
+      });
+    }}
+  >
+    Home
+  </Link>
+  <Link
+    to="/profile"
+    className={styles.topbar__link}
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "link",
+        newValue: "profile_settings",
+        url: window.location.pathname,
+      });
+    }}
+  >
+    Profile settings
+  </Link>
+  <button
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "button",
+        newValue: "logout",
+        url: window.location.pathname,
+      });
+      localStorage.removeItem('token');
+      nav('/signin');
+    }}
+    className={styles.topbar__link}
+  >
+    Logout
+  </button>
 
-          <div className={styles.topbar__points}>
-            <div className={styles.points__avatar}>
-              <img
-                src={profilePic ? `${API_BASE}${profilePic}` : avatarPlaceholder}
-                alt="Avatar"
-              />
-            </div>
-            <span className={styles.points__value}>{points}</span>
-          </div>
+  <div className={styles.topbar__points}>
+    <div className={styles.points__avatar}>
+      <img
+        src={profilePic ? `${API_BASE}${profilePic}` : avatarPlaceholder}
+        alt="Avatar"
+      />
+    </div>
+    <span className={styles.points__value}>{points}</span>
+  </div>
 
-          <button
-            onClick={() => nav('/add-location')}
-            className={`${styles.btn} ${styles['btn--icon']}`}
-          >
-            <img src={plusIcon} alt="Add"/>
-          </button>
-        </nav>
+  <button
+    onClick={() => {
+      logUserAction({
+        actionType: "click",
+        componentType: "button",
+        newValue: "add_location",
+        url: window.location.pathname,
+      });
+      nav('/add-location');
+    }}
+    className={`${styles.btn} ${styles['btn--icon']}`}
+  >
+    <img src={plusIcon} alt="Add"/>
+  </button>
+</nav>
+
       </header>
 
       {/* EDIT LOCATION MAIN */}
@@ -171,24 +230,48 @@ const EditLocationPage: React.FC = () => {
               type="file"
               accept="image/*"
               hidden
-              onChange={handleFile}
+              onChange={e => {
+                logUserAction({
+                  actionType: "changed_value",
+                  componentType: "file",
+                  newValue: e.target.files?.[0]?.name ?? null,
+                  url: window.location.pathname
+                });
+                handleFile(e);
+              }}
             />
+
           </label>
         </div>
 
         <div className={styles['edit-location__actions']}>
           <button
             className={`${styles.btn} ${styles['btn--primary']}`}
-            onClick={handleSave}
+            onClick={e => {
+              logUserAction({
+                actionType: "click",
+                componentType: "button",
+                url: window.location.pathname
+              });
+              handleSave();
+            }}
           >
             Save
           </button>
           <button
             className={`${styles.btn} ${styles['btn--link']}`}
-            onClick={handleCancel}
+            onClick={e => {
+              logUserAction({
+                actionType: "click",
+                componentType: "button",
+                url: window.location.pathname
+              });
+              handleCancel();
+            }}
           >
             Cancel
           </button>
+
         </div>
       </main>
 
