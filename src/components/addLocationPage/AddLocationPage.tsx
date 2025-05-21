@@ -87,13 +87,13 @@ const AddLocationPage: React.FC = () => {
     const loadProfile = async () => {
       try {
         // 1) points
-        const p = await fetch(`${API_BASE}/api/Profile`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (p.ok) {
-          const { points } = await p.json();
-          setPoints(points ?? 0);
-        }
+const w = await fetch(`${API_BASE}/api/Profile/wallet`, {
+  headers: { Authorization: `Bearer ${token}` }
+});
+if (w.ok) {
+  const { points } = await w.json();
+  setPoints(points ?? 0);
+}
         // 2) picture
         const me = await fetch(`${API_BASE}/api/Profile/me`, {
           headers: { Authorization: `Bearer ${token}` }
