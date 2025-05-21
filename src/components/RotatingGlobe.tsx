@@ -11,7 +11,7 @@ const CLOUD_SPEED   = 0.00004;
 const SUN_DIR       = new THREE.Vector3(-0.9, 0.3, -0.25).normalize();
 /* ───────────────────────────────────────────── */
 
-/*atmosphere layers*/ 
+/*atmosphere layers*/
 const ATMOS_LAYERS = [
   { file: "/textures/atmo_whiteish.webp",           radius: 104.8, opacity: 0.009 },
   { file: "/textures/atmo_whiteishultrablue.webp",  radius: 105.3, opacity: 0.013 },
@@ -20,12 +20,19 @@ const ATMOS_LAYERS = [
   { file: "/textures/atmo_darkishblue.webp",        radius: 106.2, opacity: 0.013 }
 ];
 
-// Globe and other textures
+// Globe and other textures (high res)
 const DAY_TEXTURE    = "/textures/earth_day_blue.jpg";
 const BUMP_TEXTURE   = "/textures/earth_day2.webp";
 const SPEC_TEXTURE   = "/textures/water_spec_8k.webp";
 const NIGHT_TEXTURE  = "/textures/earth_night.webp";
 const CLOUD_TEXTURE  = "/textures/clouds.jpg";
+
+// Low-res equivalents
+const LOW_DAY_TEXTURE    = "/textures/low_earth_day_blue.jpg";
+const LOW_BUMP_TEXTURE   = "/textures/low_earth_day2.jpg";
+const LOW_SPEC_TEXTURE   = "/textures/low_water_spec_8k.jpg";
+const LOW_NIGHT_TEXTURE  = "/textures/low_earth_night.jpg";
+const LOW_CLOUD_TEXTURE  = "/textures/low_clouds.jpg";
 
 // loader
 const loadTex = (url: string) =>
@@ -58,19 +65,32 @@ const RealisticGlobe: React.FC = () => {
 
     let cloudMesh: THREE.Mesh | null = null;
     let atmoMeshes: THREE.Mesh[] = [];
+    let earth: THREE.Mesh | null = null;
     let rafId: number | null = null;
 
     (async () => {
-      /* ---------- Earth (day / night + specular) ---------------- */
-      const [dayTex, nightTex, specTex, bumpTex] = await Promise.all([
-        loadTex(DAY_TEXTURE),
-        loadTex(NIGHT_TEXTURE),
-        loadTex(SPEC_TEXTURE),
-        loadTex(BUMP_TEXTURE)
+      // Load low-res main textures in parallel
+      const [
+        dayTex,
+        nightTex,
+        specTex,
+        bumpTex
+      ] = await Promise.all([
+        loadTex(LOW_DAY_TEXTURE),
+        loadTex(LOW_NIGHT_TEXTURE),
+        loadTex(LOW_SPEC_TEXTURE),
+        loadTex(LOW_BUMP_TEXTURE)
       ]);
 
-      const earth = new THREE.Mesh(
-        new THREE.SphereGeometry(101, 200, 200),
+      // Keep references for disposal
+      let lowDayTex = dayTex;
+      let lowNightTex = nightTex;
+      let lowSpecTex = specTex;
+      let lowBumpTex = bumpTex;
+
+      // Add earth mesh using low-res textures
+      earth = new THREE.Mesh(
+        new THREE.SphereGeometry(101, 64, 64),
         new THREE.ShaderMaterial({
           uniforms: {
             dayMap  : { value: dayTex   },
@@ -109,9 +129,44 @@ const RealisticGlobe: React.FC = () => {
       );
       globe.scene().add(earth);
 
+      // Start background loading of high-res main textures, then hot-swap them & dispose low-res
+      Promise.all([
+        loadTex(DAY_TEXTURE),
+        loadTex(NIGHT_TEXTURE),
+        loadTex(SPEC_TEXTURE),
+        loadTex(BUMP_TEXTURE)
+      ]).then(([hiDay, hiNight, hiSpec, hiBump]) => {
+        if (earth && earth.material instanceof THREE.ShaderMaterial) {
+          // Dispose old (low-res) textures before swapping
+          if (earth.material.uniforms.dayMap.value && earth.material.uniforms.dayMap.value !== hiDay) {
+            (earth.material.uniforms.dayMap.value as THREE.Texture).dispose();
+          }
+          if (earth.material.uniforms.nightMap.value && earth.material.uniforms.nightMap.value !== hiNight) {
+            (earth.material.uniforms.nightMap.value as THREE.Texture).dispose();
+          }
+          if (earth.material.uniforms.specMap.value && earth.material.uniforms.specMap.value !== hiSpec) {
+            (earth.material.uniforms.specMap.value as THREE.Texture).dispose();
+          }
+          if (earth.material.uniforms.bumpMap.value && earth.material.uniforms.bumpMap.value !== hiBump) {
+            (earth.material.uniforms.bumpMap.value as THREE.Texture).dispose();
+          }
+          earth.material.uniforms.dayMap.value   = hiDay;
+          earth.material.uniforms.nightMap.value = hiNight;
+          earth.material.uniforms.specMap.value  = hiSpec;
+          earth.material.uniforms.bumpMap.value  = hiBump;
+          earth.material.needsUpdate = true;
+        }
+        // Remove references to low-res textures for GC
+        lowDayTex = null as any;
+        lowNightTex = null as any;
+        lowSpecTex = null as any;
+        lowBumpTex = null as any;
+      });
+
       /* ---------- Clouds ---------------------------------------- */
       if (SHOW_CLOUDS) {
-        const cloudTex = await loadTex(CLOUD_TEXTURE);
+        const cloudTex = await loadTex(LOW_CLOUD_TEXTURE);
+        let lowCloudTex = cloudTex;
 
         const cloudMat = new THREE.MeshPhongMaterial({
           map: cloudTex,
@@ -124,9 +179,21 @@ const RealisticGlobe: React.FC = () => {
         });
 
         cloudMesh = new THREE.Mesh(
-          new THREE.SphereGeometry(102, 160, 160), cloudMat
+          new THREE.SphereGeometry(102, 64, 64), cloudMat
         );
         globe.scene().add(cloudMesh);
+
+        // Load high-res clouds async and swap in & dispose low-res
+        loadTex(CLOUD_TEXTURE).then(hiCloudTex => {
+          if (cloudMesh && cloudMesh.material instanceof THREE.MeshPhongMaterial) {
+            if (cloudMesh.material.map && cloudMesh.material.map !== hiCloudTex) {
+              cloudMesh.material.map.dispose();
+            }
+            cloudMesh.material.map = hiCloudTex;
+            cloudMesh.material.needsUpdate = true;
+            lowCloudTex = null as any;
+          }
+        });
 
         const spin = () => {
           cloudMesh!.rotation.y += CLOUD_SPEED;
@@ -137,12 +204,13 @@ const RealisticGlobe: React.FC = () => {
 
       /* ---------- Stacked Atmosphere Layers --------------------- */
       if (SHOW_ATMOS) {
+        // No low-res for atmos, just load as usual (they're tiny)
         for (let i = 0; i < ATMOS_LAYERS.length; ++i) {
           const layer = ATMOS_LAYERS[i];
           const atmoTex = await loadTex(layer.file);
 
           const atmoMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(layer.radius, 160, 160),
+            new THREE.SphereGeometry(layer.radius, 64, 64),
             new THREE.MeshBasicMaterial({
               map: atmoTex,
               transparent: true,
@@ -159,11 +227,11 @@ const RealisticGlobe: React.FC = () => {
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
-      [cloudMesh, ...atmoMeshes].forEach(m=>{
+      [cloudMesh, earth, ...atmoMeshes].forEach(m=>{
         if (!m) return;
         globe.scene().remove(m);
-        (m.material as THREE.Material).dispose();
-        m.geometry.dispose();
+        if (m.material) (m.material as THREE.Material).dispose();
+        if (m.geometry) m.geometry.dispose();
       });
     };
   }, []);
@@ -172,8 +240,8 @@ const RealisticGlobe: React.FC = () => {
     <Globe
       ref={globeRef as any}
       backgroundColor="rgba(0,0,0,0)"
-      globeImageUrl={DAY_TEXTURE}
-      bumpImageUrl={BUMP_TEXTURE}
+      globeImageUrl={DAY_TEXTURE} // fallback, not used for custom mesh
+      bumpImageUrl={BUMP_TEXTURE} // fallback, not used for custom mesh
       backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"
       width={undefined}
       height={undefined}
